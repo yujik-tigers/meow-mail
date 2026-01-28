@@ -1,10 +1,10 @@
-package tigers.meowmail.subscription.repository;
+package tigers.meowmail.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import tigers.meowmail.subscription.entity.SubscriptionToken;
+import tigers.meowmail.entity.SubscriptionToken;
 
 public interface SubscriptionTokenRepository extends JpaRepository<SubscriptionToken, Long> {
 

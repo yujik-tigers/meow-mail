@@ -1,4 +1,4 @@
-package tigers.meowmail.subscription.entity;
+package tigers.meowmail.entity;
 
 public enum SubscriptionStatus {
 

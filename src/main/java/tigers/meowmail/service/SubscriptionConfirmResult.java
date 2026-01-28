@@ -1,4 +1,4 @@
-package tigers.meowmail.subscription.service;
+package tigers.meowmail.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

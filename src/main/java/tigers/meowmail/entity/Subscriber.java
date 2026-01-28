@@ -1,4 +1,4 @@
-package tigers.meowmail.subscription.entity;
+package tigers.meowmail.entity;
 
 import java.time.Instant;
 
@@ -9,9 +9,15 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Getter
 public class Subscriber {
 
@@ -21,6 +27,9 @@ public class Subscriber {
 
 	@Column(nullable = false, length = 320)
 	private String email; // lower-case normalized
+
+	@Column(nullable = false, length = 5)
+	private String time; // HH:mm format
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 32)
@@ -43,6 +52,11 @@ public class Subscriber {
 	public void markInactive(Instant inactiveAt) {
 		this.status = SubscriptionStatus.INACTIVE;
 		this.updatedAt = inactiveAt;
+	}
+
+	public void updateTime(String time, Instant updatedAt) {
+		this.time = time;
+		this.updatedAt = updatedAt;
 	}
 
 }
