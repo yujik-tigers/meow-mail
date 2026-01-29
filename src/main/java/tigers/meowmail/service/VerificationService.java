@@ -44,7 +44,7 @@ public class VerificationService {
 			return;
 		}
 
-		String rawToken = tokenService.createToken(subscriber.getId());
+		String rawToken = tokenService.createToken(subscriber);
 		String verificationUrl = buildVerificationUrl(rawToken);
 
 		sendHtmlMail(email, preferredTime, verificationUrl);

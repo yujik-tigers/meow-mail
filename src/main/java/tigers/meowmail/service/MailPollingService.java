@@ -36,27 +36,46 @@ public class MailPollingService {
 	public void pollSubscriptionMails() {
 		Properties props = new Properties();
 		props.put("mail.store.protocol", PROTOCOL);
+		props.put("mail.imaps.timeout", "10000");
+		props.put("mail.imaps.connectiontimeout", "10000");
 
-		try (Store store = Session.getInstance(props).getStore(PROTOCOL)) {
+		Store store = null;
+		Folder inbox = null;
+
+		try {
+			store = Session.getInstance(props).getStore(PROTOCOL);
 			store.connect(IMAP_HOST, mailProperties.username(), mailProperties.password());
 
-			try (Folder inbox = store.getFolder(FOLDER_INBOX)) {
-				inbox.open(Folder.READ_WRITE);
+			inbox = store.getFolder(FOLDER_INBOX);
+			inbox.open(Folder.READ_WRITE);
 
-				// Search for unread messages only
-				Message[] unreadMessages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+			Message[] unreadMessages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 
-				if (unreadMessages.length > 0) {
-					log.info("[MailPolling] Found {} unread message(s).", unreadMessages.length);
-				}
+			if (unreadMessages.length > 0) {
+				log.info("[MailPolling] Found {} unread message(s).", unreadMessages.length);
+			}
 
-				for (Message message : unreadMessages) {
+			for (Message message : unreadMessages) {
+				try {
 					processSubscriptionRequest(message);
-					message.setFlag(Flags.Flag.SEEN, true); // Mark as read after processing
+					message.setFlag(Flags.Flag.SEEN, true); // 성공 시에만 읽음 표시
+				} catch (Exception e) {
+					log.error("[MailPolling] Failed to process message: {}", getSubjectSafe(message), e);
+					// 실패 시 다음 폴링에서 재시도하도록 SEEN 플래그를 건드리지 않음
 				}
 			}
 		} catch (MessagingException e) {
-			log.error("[MailPolling] Failed to connect or access mail folder", e);
+			log.error("[MailPolling] IMAP connection error", e);
+		} finally {
+			// 자원 해제 순서 준수
+			try {
+				if (inbox != null && inbox.isOpen())
+					inbox.close(false);
+			} catch (Exception e) { /* ignore */ }
+			try {
+				if (store != null)
+					store.close();
+			} catch (Exception e) { /* ignore */ }
 		}
 	}
 
@@ -86,30 +105,28 @@ public class MailPollingService {
 		}
 	}
 
-	/**
-	 * Extracts plain text content from various Message types (Simple or Multipart).
-	 */
 	private String getTextFromMessage(Message message) throws MessagingException, IOException {
 		if (message.isMimeType("text/plain")) {
 			return message.getContent().toString();
 		} else if (message.isMimeType("multipart/*")) {
-			MimeMultipart mimeMultipart = (MimeMultipart)message.getContent();
-			return getTextFromMimeMultipart(mimeMultipart);
+			return getTextFromMimeMultipart((MimeMultipart)message.getContent());
 		}
-
 		return "";
 	}
 
 	private String getTextFromMimeMultipart(MimeMultipart mimeMultipart) throws MessagingException, IOException {
-		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < mimeMultipart.getCount(); i++) {
 			BodyPart bodyPart = mimeMultipart.getBodyPart(i);
 			if (bodyPart.isMimeType("text/plain")) {
-				result.append(bodyPart.getContent());
+				return bodyPart.getContent().toString(); // 첫 번째 plain text 파트만 반환
+			} else if (bodyPart.getContent() instanceof MimeMultipart) {
+				// 재귀적으로 탐색 중첩 구조 대응
+				String result = getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+				if (!result.isEmpty())
+					return result;
 			}
 		}
-
-		return result.toString();
+		return "";
 	}
 
 	private String getSubjectSafe(Message message) {

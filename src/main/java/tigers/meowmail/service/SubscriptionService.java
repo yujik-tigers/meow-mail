@@ -2,7 +2,6 @@ package tigers.meowmail.service;
 
 import static tigers.meowmail.service.SubscriptionConfirmResult.ALREADY_ACTIVE;
 import static tigers.meowmail.service.SubscriptionConfirmResult.CONFIRMED;
-import static tigers.meowmail.service.SubscriptionConfirmResult.SUBSCRIBER_INACTIVE;
 import static tigers.meowmail.service.SubscriptionConfirmResult.SUBSCRIBER_NOT_FOUND;
 import static tigers.meowmail.service.SubscriptionConfirmResult.TOKEN_EXPIRED;
 import static tigers.meowmail.service.SubscriptionConfirmResult.TOKEN_INVALID;
@@ -10,7 +9,6 @@ import static tigers.meowmail.service.SubscriptionConfirmResult.TOKEN_USED;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -19,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import tigers.meowmail.entity.Subscriber;
 import tigers.meowmail.entity.SubscriptionStatus;
 import tigers.meowmail.entity.SubscriptionToken;
-import tigers.meowmail.repository.SubscriberRepository;
 import tigers.meowmail.repository.SubscriptionTokenRepository;
 import tigers.meowmail.util.TokenCodec;
 
@@ -37,39 +34,32 @@ public class SubscriptionService {
 	// SMTP vs SMTP Submission: SMTP는 메일 서버끼리 메일을 전달하기 위한 프로토콜, SMTP Submission은 애플리케이션이 인증을 거쳐 메일을 서버에 제출하기 위한 프로토콜
 
 	private final SubscriptionTokenRepository subscriptionTokenRepo;
-	private final SubscriberRepository subscriberRepo;
 	private final Clock clock;
 
 	public SubscriptionConfirmResult confirm(String rawToken) {
 		String tokenHashHex = TokenCodec.sha256Hex(rawToken);
 
-		Optional<SubscriptionToken> tokenOpt = subscriptionTokenRepo.findByTokenHashHex(tokenHashHex);
-		if (tokenOpt.isEmpty())
+		SubscriptionToken token = subscriptionTokenRepo.findByTokenHashHex(tokenHashHex).orElse(null);
+		if (token == null)
 			return TOKEN_INVALID;
 
-		SubscriptionToken token = tokenOpt.get();
+		Subscriber subscriber = token.getSubscriber();
+		if (subscriber == null)
+			return SUBSCRIBER_NOT_FOUND;
 
 		Instant now = Instant.now(clock);
+		if (subscriber.getStatus() == SubscriptionStatus.ACTIVE) {
+			token.markUsed(now);
+			return ALREADY_ACTIVE;
+		}
+
 		if (token.isUsed())   // Concurrency
 			return TOKEN_USED;
 		if (token.isExpired(now))
 			return TOKEN_EXPIRED;
 
-		Optional<Subscriber> subscriberOpt = subscriberRepo.findById(token.getSubscriberId());
-		if (subscriberOpt.isEmpty())
-			return SUBSCRIBER_NOT_FOUND;
-
-		Subscriber subscriber = subscriberOpt.get();
-
-		if (subscriber.getStatus() == SubscriptionStatus.INACTIVE)
-			return SUBSCRIBER_INACTIVE;
-		if (subscriber.getStatus() == SubscriptionStatus.ACTIVE) {
-			token.markUsed(Instant.now(clock));
-			return ALREADY_ACTIVE;
-		}
-
-		subscriber.markActive(Instant.now(clock));
-		token.markUsed(Instant.now(clock));
+		subscriber.markActive(now);
+		token.markUsed(now);
 
 		return CONFIRMED;
 	}

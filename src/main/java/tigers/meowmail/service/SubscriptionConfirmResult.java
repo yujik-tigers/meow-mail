@@ -9,58 +9,58 @@ public enum SubscriptionConfirmResult {
 
 	CONFIRMED(
 		"Subscription Confirmed",
-		"Meow-!",
-		"이메일 인증에 성공해서 구독이 완료되었어요.\n매일 귀여운 고양이를 보내드릴게요!",
-		"Get ready for some meow-velous memes delivered to your inbox!",
+		"You're officially a cat person!",
+		"집사가 되신 걸 환영해요!\n매일 배달되는 귀여운 고양이 소식과 함께\n기분 좋은 하루를 시작해 보세요.",
+		"Welcome to the club!\nGet ready for your daily dose of fluff.\nPurr-fect stories are headed to your inbox.",
 		"info"
 	),
 
 	ALREADY_ACTIVE(
 		"Already Subscribed",
 		"You're already on the list!",
-		"이미 구독이 활성화되어 있어요.\n곧 메일함에서 고양이를 만나실 수 있어요!",
-		"You're already subscribed — keep an eye on your inbox!",
+		"이미 구독 중이시네요!\n고양이들은 이미 당신의 메일함으로\n달려갈 준비를 마쳤답니다.",
+		"You're already part of the family!\nKeep an eye on your inbox—\nyour daily cat is on the way.",
 		"info"
 	),
 
 	TOKEN_INVALID(
 		"Invalid Link",
 		"Oops! Something went wrong",
-		"유효하지 않은 인증 링크네요!\n다시 시도해 주세요.",
-		"This confirmation link is invalid.\nPlease try again.",
+		"이런, 꼬인 실타래처럼 링크가 잘못되었어요.\n올바른 인증 링크인지 다시 확인해 주세요.",
+		"Oops! This link is a bit tangled.\nPlease double-check your confirmation email.",
 		"error"
 	),
 
 	TOKEN_EXPIRED(
 		"Link Expired",
 		"This link has expired",
-		"인증 링크가 만료되었어요.\n새로운 인증 메일을 요청해 주세요.",
-		"This confirmation link has expired!\nPlease request a new one.",
+		"인증 링크가 낮잠을 자러 갔나 봐요.\n보안을 위해 다시 한번 인증 메일을 요청해 주세요.",
+		"This link is past its nap time.\nFor your security, please request\na new confirmation email.",
 		"error"
 	),
 
 	TOKEN_USED(
 		"Link Already Used",
 		"Already confirmed",
-		"이미 사용된 인증 링크예요.",
-		"This confirmation link has already been used.",
+		"이미 사용된 링크예요.\n발바닥 도장이 이미 꾹 찍혔답니다!",
+		"This link has already been used.\nYour paw-print is already on the list!",
 		"error"
 	),
 
 	SUBSCRIBER_NOT_FOUND(
 		"Subscriber Not Found",
 		"We couldn't find you",
-		"구독 정보를 찾을 수 없어요.\n이메일 주소를 다시 확인해 주세요.",
-		"We couldn't find a subscription associated with this email.",
+		"구독 정보를 찾을 수 없어요.\n혹시 다른 이메일로 신청하셨나요?",
+		"We couldn't find your subscription.\nAre you sure this is the right email address?",
 		"error"
 	),
 
 	SUBSCRIBER_INACTIVE(
 		"Subscription Inactive",
 		"Subscription is inactive",
-		"현재 구독이 비활성화된 상태예요.\n다시 구독을 진행해 주세요.",
-		"Your subscription is currently inactive.\nPlease subscribe again.",
-		"warning"
+		"현재 구독이 잠들어 있는 상태예요.\n다시 고양이를 만나고 싶다면 구독을 신청해 주세요.",
+		"Your subscription is currently taking a long nap.\nPlease subscribe again to wake it up!",
+		"error"
 	);
 
 	private final String result;

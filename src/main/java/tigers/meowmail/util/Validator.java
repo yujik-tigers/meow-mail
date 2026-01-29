@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Validator {
 
-	// RFC 5322 규격을 준수하는 표준적인 이메일 정규식
-	private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+	private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
 	private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+
+	private static final String TIME_REGEX = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
+	private static final Pattern TIME_PATTERN = Pattern.compile(TIME_REGEX);
 
 	public static boolean isValidEmail(String email) {
 		if (email == null || email.isBlank()) {
@@ -20,7 +22,10 @@ public final class Validator {
 	}
 
 	public static boolean isValidTime(String time) {
-		return time.matches("^([01]?[0-9]|2[0-3]):[0-5][0-9]$");
+		if (time == null || time.isBlank()) {
+			return false;
+		}
+		return TIME_PATTERN.matcher(time).matches();
 	}
 
 }

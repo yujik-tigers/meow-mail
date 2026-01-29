@@ -2,6 +2,7 @@ package tigers.meowmail.util;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.HexFormat;
 
@@ -13,20 +14,24 @@ public final class TokenCodec {
 
 	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 	private static final HexFormat HEX = HexFormat.of();
+	private static final String ALGORITHM = "SHA-256";
 
 	public static String newRawTokenUrlSafe() {
 		byte[] buf = new byte[32]; // 32 bytes = 256-bit
 		SECURE_RANDOM.nextBytes(buf);
-		return HEX.formatHex(buf); // URL-safe 형태로 쓰기 위해 hex 사용 (길이는 64 chars)
+		return HEX.formatHex(buf); // 64 chars
 	}
 
 	public static String sha256Hex(String rawToken) {
+		if (rawToken == null)
+			return null;
+
 		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+			MessageDigest messageDigest = MessageDigest.getInstance(ALGORITHM);
 			byte[] dig = messageDigest.digest(rawToken.getBytes(StandardCharsets.UTF_8));
 			return HEX.formatHex(dig);
-		} catch (Exception e) {
-			throw new IllegalStateException("SHA-256 not available", e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException(ALGORITHM + " algorithm not found", e);
 		}
 	}
 
