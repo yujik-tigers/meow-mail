@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import tigers.meowmail.service.SubscriptionConfirmResult;
+import tigers.meowmail.service.SubscriptionResult;
 import tigers.meowmail.service.SubscriptionService;
 
 @Controller
@@ -17,11 +17,13 @@ import tigers.meowmail.service.SubscriptionService;
 @Slf4j
 public class SubscriptionController {
 
+	private static final String VIEW_CONFIRM_RESULT = "subscription-confirm-result";
+
 	private final SubscriptionService subscriptionService;
 
 	@GetMapping
 	public String confirm(@RequestParam String token, Model model) {
-		SubscriptionConfirmResult result = subscriptionService.confirm(token);
+		SubscriptionResult result = subscriptionService.confirm(token);
 
 		model.addAttribute("result", result.getResult());
 		model.addAttribute("title_en", result.getTitle_en());
@@ -29,7 +31,7 @@ public class SubscriptionController {
 		model.addAttribute("message_ko", result.getMessage_ko());
 		model.addAttribute("type", result.getType());
 
-		return "subscription-confirm-result";
+		return VIEW_CONFIRM_RESULT;
 	}
 
 }

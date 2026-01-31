@@ -1,11 +1,11 @@
 package tigers.meowmail.service;
 
-import static tigers.meowmail.service.SubscriptionConfirmResult.ALREADY_ACTIVE;
-import static tigers.meowmail.service.SubscriptionConfirmResult.CONFIRMED;
-import static tigers.meowmail.service.SubscriptionConfirmResult.SUBSCRIBER_NOT_FOUND;
-import static tigers.meowmail.service.SubscriptionConfirmResult.TOKEN_EXPIRED;
-import static tigers.meowmail.service.SubscriptionConfirmResult.TOKEN_INVALID;
-import static tigers.meowmail.service.SubscriptionConfirmResult.TOKEN_USED;
+import static tigers.meowmail.service.SubscriptionResult.ALREADY_ACTIVE;
+import static tigers.meowmail.service.SubscriptionResult.CONFIRMED;
+import static tigers.meowmail.service.SubscriptionResult.SUBSCRIBER_NOT_FOUND;
+import static tigers.meowmail.service.SubscriptionResult.TOKEN_EXPIRED;
+import static tigers.meowmail.service.SubscriptionResult.TOKEN_INVALID;
+import static tigers.meowmail.service.SubscriptionResult.TOKEN_USED;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -36,7 +36,7 @@ public class SubscriptionService {
 	private final SubscriptionTokenRepository subscriptionTokenRepo;
 	private final Clock clock;
 
-	public SubscriptionConfirmResult confirm(String rawToken) {
+	public SubscriptionResult confirm(String rawToken) {
 		String tokenHashHex = TokenCodec.sha256Hex(rawToken);
 
 		SubscriptionToken token = subscriptionTokenRepo.findByTokenHashHex(tokenHashHex).orElse(null);

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum SubscriptionConfirmResult {
+public enum SubscriptionResult {
 
 	CONFIRMED(
 		"Subscription Confirmed",
@@ -52,14 +52,6 @@ public enum SubscriptionConfirmResult {
 		"We couldn't find you",
 		"구독 정보를 찾을 수 없어요.\n혹시 다른 이메일로 신청하셨나요?",
 		"We couldn't find your subscription.\nAre you sure this is the right email address?",
-		"error"
-	),
-
-	SUBSCRIBER_INACTIVE(
-		"Subscription Inactive",
-		"Subscription is inactive",
-		"현재 구독이 잠들어 있는 상태예요.\n다시 고양이를 만나고 싶다면 구독을 신청해 주세요.",
-		"Your subscription is currently taking a long nap.\nPlease subscribe again to wake it up!",
 		"error"
 	);
 

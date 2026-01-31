@@ -3,50 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
-    <style>
-        .container {
-            font-family: 'Apple SD Gothic Neo', sans-serif;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #eee;
-            border-radius: 10px;
-        }
 
-        .header {
-            color: #333;
-        }
-
-        .button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 25px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .footer {
-            color: #999;
-            font-size: 12px;
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body>
 <main>
-    <div class="container">
-        <h2 class="header">안녕하세요! Meow Mail입니다. 🐈</h2>
+    <div class="container" style="font-family: 'Apple SD Gothic Neo', sans-serif;max-width: 500px;margin: 0 auto;padding: 20px;border: 1px solid #eee;border-radius: 10px;">
+        <h2 class="header" style="color: #333;">안녕하세요! 🐱</h2>
         <p>구독을 신청해 주셔서 감사합니다.</p>
-        <p>아래 버튼을 누르면 구독 인증이 완료되며, 설정하신 <strong>[[${preferredTime}]]</strong>에 메일을 보내드릴게요.</p>
+        <p>아래 버튼을 누르면 구독 인증이 완료되며, 매일 요청하신 <strong>[[${preferredTime}]]</strong>에 메일을 보내드릴게요.</p>
 
         <div style="text-align: center; margin: 30px 0;">
-            <a th:href="${verificationUrl}" class="button">구독 확인하기</a>
+            <a th:href="${verificationUrl}" class="button"
+               style="background-color: #4CAF50;color: white;padding: 15px 25px;text-decoration: none;border-radius: 5px;font-weight: bold;display: inline-block;">구독 확인하기</a>
         </div>
 
-        <p class="footer">본인이 신청하지 않았다면 이 메일을 무시하셔도 됩니다.</p>
+        <p>Meow Mail 드림 🐈</p>
+        <br>
+        <p class="footer" style="color: #999;font-size: 12px;text-align: center;margin-top: 20px;">본인이 신청하지 않았다면 이 메일을 무시하셔도 됩니다.</p>
     </div>
 </main>
 </body>
