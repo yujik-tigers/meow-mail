@@ -1,60 +1,25 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title></title>
-    <style>
-        .container {
-            font-family: 'Apple SD Gothic Neo', sans-serif;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #eee;
-            border-radius: 10px;
-        }
 
-        .header {
-            color: #333;
-        }
-
-        .info-box {
-            background-color: #d4edda;
-            border: 1px solid #28a745;
-            border-radius: 5px;
-            padding: 15px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .time {
-            font-size: 24px;
-            font-weight: bold;
-            color: #28a745;
-        }
-
-        .footer {
-            color: #999;
-            font-size: 12px;
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body>
 <main>
-    <div class="container">
-        <h2 class="header">구독 시간이 변경되었어요! 🐱</h2>
+    <div style="max-width: 550px;margin: 0 auto;padding: 40px;text-align: center;color: #1B211A;background-color: #FFFDF6;border: none;border-radius: 40px;">
+        <h2 style="color: #333;">구독 시간이 변경되었어요!</h2>
 
         <p>요청하신 대로 구독 시간이 변경되었습니다.</p>
 
-        <div class="info-box">
-            <p>새로운 구독 시간</p>
-            <p class="time">[[${newTime}]]</p>
+        <div style="text-align: left;background-color: #ECFAE5;border: none;border-radius: 15px;padding: 10px 35px;margin: 20px 0;">
+            <p><strong>새로운 구독 시간:</strong> [[${newTime}]]</p>
         </div>
 
-        <p>앞으로 변경된 시간에 귀여운 고양이 소식을 보내드릴게요!</p>
+        <p>앞으로 변경된 시간에 귀여운 고양이를 보내드릴게요!</p>
 
-        <p class="footer">Meow Mail 🐈</p>
+        <p style="color: #787878;font-size: 14px;text-align: center;margin-top: 20px;">Meow Mail 드림 🐈</p>
+        <p style="color: #787878;font-size: 12px;text-align: center;margin-top: 20px;">본인이 신청하지 않았다면 이 메일을 무시하셔도 됩니다.</p>
     </div>
 </main>
 </body>

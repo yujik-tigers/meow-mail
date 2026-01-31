@@ -7,14 +7,15 @@
 </head>
 <body>
 <main>
-    <div class="container" style="font-family: 'Apple SD Gothic Neo', sans-serif;max-width: 500px;margin: 0 auto;padding: 20px;border: 1px solid #eee;border-radius: 10px;">
+    <div style="max-width: 550px;margin: 0 auto;padding: 40px;text-align: center;color: #1B211A;background-color: #FFFDF6;border: none;border-radius: 40px;">
         <h2 class="header" th:text="${title}" style="color: #333;">제목</h2>
 
         <div class="result-box" th:classappend="${type}" style="border-radius: 5px;padding: 15px;margin: 20px 0;white-space: pre-line;">
             <p th:text="${message}">메시지</p>
         </div>
 
-        <p class="footer" style="color: #999;font-size: 12px;text-align: center;margin-top: 20px;">Meow Mail 🐈</p>
+        <p style="color: #787878;font-size: 14px;text-align: center;margin-top: 20px;">Meow Mail 드림 🐈</p>
+        <p style="color: #787878;font-size: 12px;text-align: center;margin-top: 20px;">본인이 신청하지 않았다면 이 메일을 무시하셔도 됩니다.</p>
     </div>
 </main>
 </body>
