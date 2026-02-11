@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class Subscriber {
+public class Subscription {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +35,7 @@ public class Subscriber {
 	@Column(nullable = false, length = 32)
 	private SubscriptionStatus status;
 
-	private Instant confirmedAt;
+	private Instant startedAt;
 
 	@Column(nullable = false)
 	private Instant createdAt;
@@ -45,7 +45,7 @@ public class Subscriber {
 
 	public void markActive(Instant activeAt) {
 		this.status = SubscriptionStatus.ACTIVE;
-		this.confirmedAt = activeAt;
+		this.startedAt = activeAt;
 		this.updatedAt = activeAt;
 	}
 

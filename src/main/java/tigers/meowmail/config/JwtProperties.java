@@ -7,23 +7,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 // 중첩 record를 사용하면 설정 파일의 계층 구조가 객체 지향적으로 코드에 그대로 투영
 // Spring Boot 3.0부터는 @ConfigurationProperties가 붙은 record에 대해 생성자 주입 방식을 기본으로 사용
 
-@ConfigurationProperties(prefix = "mail")
-public record MailPollingProperties(
-	AccountProperties subscribe,
-	AccountProperties unsubscribe,
-	PollingProperties polling,
-	ImapProperties imap
-) {
+@ConfigurationProperties(prefix = "jwt")
+public record JwtProperties(String secret, String issuer, Expiration expiration) {
 
-	public record AccountProperties(String username, String password) {
-
-	}
-
-	public record PollingProperties(long subscribeRate, long unsubscribeRate) {
-
-	}
-
-	public record ImapProperties(String host, int timeout, int connectionTimeout) {
+	public record Expiration(long verification, long subscription) {
 
 	}
 
