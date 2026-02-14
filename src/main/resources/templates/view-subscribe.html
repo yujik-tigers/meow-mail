@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Meow Mail 구독</title>
+
+    <link rel="stylesheet" as="style" crossorigin
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"/>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#ffca45",
+                        secondary: "#a1c606",
+                        "pastel-bg": "#fffefc",
+                        "background-dark": "#081022",
+                    },
+                    fontFamily: {
+                        display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                        sans:    ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        body {
+            @apply bg-pastel-bg dark:bg-background-dark font-sans;
+        }
+
+        .form-card {
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        html.dark .form-card {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-8px); }
+        }
+        .floating { animation: float 3s ease-in-out infinite; }
+
+        /* 단계 전환 */
+        .step { display: none; }
+        .step.active { display: block; }
+
+        .input-error {
+            @apply border-red-400 focus:ring-red-300 !important;
+        }
+        .input-verified {
+            @apply border-secondary focus:ring-secondary/40 !important;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6 transition-colors duration-300">
+
+<!-- 다크모드 토글 -->
+<button class="fixed top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-300 hover:scale-110 transition-transform"
+        onclick="document.documentElement.classList.toggle('dark')">
+    <span class="material-symbols-outlined text-xl">dark_mode</span>
+</button>
+
+<main class="max-w-lg w-full">
+
+    <!-- ── STEP 1: 구독 폼 ── -->
+    <div id="step-form" class="step active">
+        <div class="form-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
+            <div class="p-10">
+
+                <!-- 헤더 -->
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 font-bold text-sm"
+                         style="background:rgba(161,198,6,0.15);color:#a1c606;">
+                        <span class="material-symbols-outlined text-lg">pets</span>
+                        Meow Mail
+                    </div>
+                    <h1 class="text-3xl font-black text-gray-900 dark:text-white leading-tight mb-2">
+                        매일 귀여운 고양이 사진 받기
+                    </h1>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">
+                        원하는 시간에 딱 한 장, 매일 고양이 사진을 보내드려요.
+                    </p>
+                </div>
+
+                <!-- 이메일 -->
+                <div class="mb-2">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
+                           for="email">
+                        이메일
+                    </label>
+                    <!-- 이메일 입력 + 인증하기 버튼 (가로 배치) -->
+                    <div class="flex gap-2">
+                        <div class="relative flex-1 min-w-0">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl pointer-events-none">
+                                mail
+                            </span>
+                            <input id="email" name="email" type="email" autocomplete="email"
+                                   placeholder="example@email.com"
+                                   class="w-full pl-10 pr-3 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary/40 focus:border-secondary transition"/>
+                        </div>
+                        <button id="send-verify-btn" type="button" disabled
+                                class="shrink-0 px-4 py-3 rounded-2xl bg-secondary text-white font-bold text-sm flex items-center gap-1.5 hover:brightness-105 active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
+                            <span id="verify-btn-icon" class="material-symbols-outlined text-base">mark_email_unread</span>
+                            <svg id="verify-btn-spinner" class="hidden animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                            </svg>
+                            <span id="verify-btn-label">인증하기</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 이메일 하단 상태 영역 -->
+                <div id="email-status" class="mb-5 min-h-[1.5rem]">
+                    <!-- 에러 메시지 -->
+                    <p id="email-error" class="hidden text-xs text-red-500 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">error</span>
+                        <span id="email-error-msg"></span>
+                    </p>
+                    <!-- 인증 대기 + 타이머 -->
+                    <div id="verify-pending" class="hidden">
+                        <div class="flex items-center justify-between mt-1.5">
+                            <p class="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">hourglass_top</span>
+                                인증 메일을 보냈어요. 메일함을 확인해 주세요.
+                            </p>
+                            <span id="timer"
+                                  class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
+                                30:00
+                            </span>
+                        </div>
+                    </div>
+                    <!-- 타이머 만료 -->
+                    <p id="verify-expired" class="hidden mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">timer_off</span>
+                        인증 유효 시간이 만료되었습니다. 다시 요청해 주세요.
+                    </p>
+                    <!-- 인증 성공 -->
+                    <p id="verify-success" class="hidden mt-1.5 text-xs text-secondary flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">verified</span>
+                        이메일 인증이 완료되었습니다.
+                    </p>
+                    <!-- 인증 실패 -->
+                    <p id="verify-fail" class="hidden mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">cancel</span>
+                        <span id="verify-fail-msg"></span>
+                    </p>
+                </div>
+
+                <!-- 수신 시간 -->
+                <div class="mb-7">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
+                           for="time">
+                        수신 시간
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl pointer-events-none">
+                            schedule
+                        </span>
+                        <select id="time" name="time"
+                                class="w-full pl-10 pr-10 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white appearance-none focus:outline-none focus:ring-2 focus:ring-secondary/40 focus:border-secondary transition cursor-pointer">
+                            <option value="" disabled selected>시간 선택</option>
+                        </select>
+                        <span class="absolute right-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl pointer-events-none">
+                            expand_more
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 구독하기 버튼 -->
+                <button id="subscribe-btn" type="button" disabled
+                        class="w-full py-3.5 rounded-2xl bg-secondary text-white font-bold text-base flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    <span class="material-symbols-outlined text-xl">pets</span>
+                    구독하기
+                </button>
+
+                <p class="mt-4 text-center text-xs text-gray-400 dark:text-gray-500">
+                    이메일 인증 후 구독이 완료됩니다.
+                </p>
+            </div>
+        </div>
+
+        <!-- 하단 칩 -->
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+            <div class="backdrop-blur-md px-4 py-2 rounded-full text-xs flex items-center gap-2 font-semibold bg-white/60 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400">
+                <span class="material-symbols-outlined text-sm">verified</span>
+                100% Cat Approved
+            </div>
+            <div class="backdrop-blur-md px-4 py-2 rounded-full text-xs flex items-center gap-2 font-semibold bg-white/60 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400">
+                <span class="material-symbols-outlined text-sm">mail</span>
+                subscribe.mail.meow@gmail.com
+            </div>
+        </div>
+    </div>
+
+    <!-- ── STEP 2: 구독 완료 ── -->
+    <div id="step-done" class="step">
+        <div id="done-card" class="form-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
+            <div class="p-10 text-center">
+                <div id="done-icon" class="text-6xl mb-6 floating">🐈</div>
+                <h2 id="done-title" class="text-3xl font-black text-gray-900 dark:text-white mb-3"></h2>
+                <p id="done-message" class="text-gray-500 dark:text-gray-400 mb-8 leading-relaxed"></p>
+                <div class="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-1">
+                    <p class="text-sm text-gray-400 dark:text-gray-500">이 창은 닫으셔도 좋습니다</p>
+                    <p class="text-sm text-gray-400 dark:text-gray-500 italic">Feel free to close this tab</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    // ── 30분 단위 시간 옵션 생성 ──
+    (function () {
+        const select = document.getElementById('time');
+        for (let h = 0; h < 24; h++) {
+            for (let m of [0, 30]) {
+                const hh = String(h).padStart(2, '0');
+                const mm = String(m).padStart(2, '0');
+                const val = `${hh}:${mm}`;
+                const opt = new Option(val, val);
+                select.appendChild(opt);
+            }
+        }
+    })();
+
+    // ── 유틸 ──
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function hideAllEmailStatus() {
+        ['email-error', 'verify-pending', 'verify-expired', 'verify-success', 'verify-fail']
+            .forEach(id => document.getElementById(id).classList.add('hidden'));
+    }
+
+    function show(id) { document.getElementById(id).classList.remove('hidden'); }
+    function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+    // ── 상태 변수 ──
+    let verified = false;
+    let timerInterval = null;
+    let activeEvtSource = null;
+
+    // ── 버튼 활성화 ──
+    function updateSendBtnState() {
+        const email = document.getElementById('email').value.trim();
+        document.getElementById('send-verify-btn').disabled = !isValidEmail(email);
+    }
+
+    function updateSubscribeBtnState() {
+        const time = document.getElementById('time').value;
+        document.getElementById('subscribe-btn').disabled = !(verified && time);
+    }
+
+    // ── 타이머 ──
+    function startTimer() {
+        clearInterval(timerInterval);
+        let remaining = 30 * 60; // 30분 (초)
+        const timerEl = document.getElementById('timer');
+
+        timerInterval = setInterval(() => {
+            remaining--;
+            const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+            const s = String(remaining % 60).padStart(2, '0');
+            timerEl.textContent = `${m}:${s}`;
+
+            if (remaining <= 0) {
+                clearInterval(timerInterval);
+                if (!verified) {
+                    hideAllEmailStatus();
+                    show('verify-expired');
+                    document.getElementById('email').classList.remove('input-verified');
+                    // 인증 버튼 재활성화 (재발송 가능)
+                    updateSendBtnState();
+                    if (activeEvtSource) {
+                        activeEvtSource.close();
+                        activeEvtSource = null;
+                    }
+                }
+            }
+        }, 1000);
+    }
+
+    // ── SSE 연결 ──
+    function openSse(email) {
+        if (activeEvtSource) {
+            activeEvtSource.close();
+        }
+
+        const evtSource = new EventSource(`/api/subscriptions/verify/events?email=${encodeURIComponent(email)}`);
+        activeEvtSource = evtSource;
+
+        evtSource.addEventListener('verified', function (e) {
+            evtSource.close();
+            activeEvtSource = null;
+            clearInterval(timerInterval);
+
+            const data = JSON.parse(e.data);
+            hideAllEmailStatus();
+
+            if (data.code === 'success') {
+                verified = true;
+                document.getElementById('email').classList.add('input-verified');
+                document.getElementById('email').readOnly = true;
+                show('verify-success');
+                updateSubscribeBtnState();
+            } else {
+                show('verify-fail');
+                document.getElementById('verify-fail-msg').textContent =
+                    data.message || '이메일 인증에 실패했어요. 다시 시도해 주세요.';
+                updateSendBtnState(); // 재발송 가능하도록
+            }
+        });
+
+        evtSource.onerror = function () {
+            // SSE 연결 오류 시 조용히 닫음 (타이머는 계속 진행)
+            evtSource.close();
+            activeEvtSource = null;
+        };
+    }
+
+    // ── 인증 버튼 로딩 상태 ──
+    function setVerifyBtnLoading(loading) {
+        document.getElementById('verify-btn-icon').classList.toggle('hidden', loading);
+        document.getElementById('verify-btn-spinner').classList.toggle('hidden', !loading);
+        document.getElementById('verify-btn-label').textContent = loading ? '전송 중…' : '인증하기';
+    }
+
+    // ── 인증 메일 발송 ──
+    document.getElementById('send-verify-btn').addEventListener('click', async function () {
+        const email = document.getElementById('email').value.trim();
+        const time = document.getElementById('time').value || '00:00'; // 발송 시엔 임시값 허용
+        const btn = this;
+
+        btn.disabled = true;
+        setVerifyBtnLoading(true);
+        hideAllEmailStatus();
+        verified = false;
+        document.getElementById('email').classList.remove('input-verified');
+        document.getElementById('email').readOnly = false;
+        updateSubscribeBtnState();
+
+        try {
+            const res = await fetch('/api/subscriptions/verify', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, time}),
+            });
+
+            if (!res.ok) {
+                const body = await res.json().catch(() => ({}));
+                show('email-error');
+                document.getElementById('email-error-msg').textContent =
+                    body.message || '요청 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.';
+                document.getElementById('email').classList.add('input-error');
+                setVerifyBtnLoading(false);
+                btn.disabled = false;
+                return;
+            }
+
+            document.getElementById('email').classList.remove('input-error');
+            setVerifyBtnLoading(false);
+            show('verify-pending');
+            startTimer();
+            openSse(email);
+            // 인증 메일 발송 후 재발송 방지 (타이머가 끝나면 다시 활성화)
+            btn.disabled = true;
+
+        } catch {
+            show('email-error');
+            document.getElementById('email-error-msg').textContent =
+                '네트워크 오류가 발생했어요. 잠시 후 다시 시도해 주세요.';
+            document.getElementById('email').classList.add('input-error');
+            setVerifyBtnLoading(false);
+            btn.disabled = false;
+        }
+    });
+
+    // ── 구독하기 ──
+    document.getElementById('subscribe-btn').addEventListener('click', async function () {
+        const email = document.getElementById('email').value.trim();
+        const time = document.getElementById('time').value;
+        const btn = this;
+
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/subscriptions', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, time}),
+            });
+
+            if (res.ok) {
+                showDone(true, '구독 완료!',
+                    `${email}으로 매일 ${time}에 귀여운 고양이 사진을 보내드릴게요. 🐾`);
+            } else {
+                const body = await res.json().catch(() => ({}));
+                showDone(false, '구독 실패', body.message || '구독 중 오류가 발생했어요.');
+            }
+        } catch {
+            showDone(false, '구독 실패', '네트워크 오류가 발생했어요. 잠시 후 다시 시도해 주세요.');
+        }
+    });
+
+    // ── 완료 화면 ──
+    function showDone(success, title, message) {
+        document.getElementById('done-icon').textContent = success ? '🐈' : '😿';
+        document.getElementById('done-title').textContent = title;
+        document.getElementById('done-message').textContent = message;
+        if (!success) {
+            document.getElementById('done-card').style.boxShadow = '0 18px 35px rgba(248,113,113,0.22)';
+        }
+        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+        document.getElementById('step-done').classList.add('active');
+    }
+
+    // ── 이벤트 리스너 ──
+    document.getElementById('email').addEventListener('input', function () {
+        if (verified) return; // 인증 완료 후 수정 불가
+        const v = this.value.trim();
+        hideAllEmailStatus();
+        this.classList.remove('input-error', 'input-verified');
+        if (v && !isValidEmail(v)) {
+            show('email-error');
+            document.getElementById('email-error-msg').textContent = '올바른 이메일 형식이 아닙니다.';
+            this.classList.add('input-error');
+        }
+        updateSendBtnState();
+    });
+
+    document.getElementById('time').addEventListener('change', updateSubscribeBtnState);
+</script>
+</body>
+</html>

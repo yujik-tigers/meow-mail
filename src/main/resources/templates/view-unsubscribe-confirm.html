@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>구독 취소 · Meow Mail</title>
+
+    <link rel="stylesheet" as="style" crossorigin
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+          rel="stylesheet"/>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#ffca45",
+                        secondary: "#a1c606",
+                        "pastel-bg": "#fffefc",
+                        "background-dark": "#081022",
+                    },
+                    fontFamily: {
+                        display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                        sans:    ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        body {
+            @apply bg-pastel-bg dark:bg-background-dark font-sans;
+        }
+
+        .form-card {
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        html.dark .form-card {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-8px); }
+        }
+        .floating { animation: float 3s ease-in-out infinite; }
+
+        .step { display: none; }
+        .step.active { display: block; }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6 transition-colors duration-300">
+
+<!-- 다크모드 토글 -->
+<button class="fixed top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-300 hover:scale-110 transition-transform"
+        onclick="document.documentElement.classList.toggle('dark')">
+    <span class="material-symbols-outlined text-xl">dark_mode</span>
+</button>
+
+<main class="max-w-md w-full">
+
+    <!-- ── STEP 1: 확인 ── -->
+    <div id="step-confirm" class="step active">
+        <div class="form-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
+            <div class="p-10 text-center">
+
+                <div class="text-6xl mb-6">😿</div>
+
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 font-bold text-sm"
+                     style="background:rgba(254,226,226,0.67);color:#b91c1c;">
+                    <span class="material-symbols-outlined text-lg">unsubscribe</span>
+                    구독 취소
+                </div>
+
+                <h1 class="text-2xl font-black text-gray-900 dark:text-white mb-3 leading-tight">
+                    정말 구독을 취소하시겠어요?
+                </h1>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mb-8 leading-relaxed">
+                    취소하시면 더 이상 고양이 사진을 받아볼 수 없어요.<br/>
+                    언제든 다시 구독하실 수 있습니다.
+                </p>
+
+                <div class="flex flex-col gap-3">
+                    <button id="confirm-btn" type="button"
+                            class="w-full py-3.5 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition active:scale-[0.98]"
+                            style="background-color:#fee2e2;color:#b91c1c;">
+                        <span class="material-symbols-outlined text-xl">do_not_disturb_on</span>
+                        네, 구독을 취소할게요
+                    </button>
+                    <a href="/subscribe"
+                       class="w-full py-3.5 rounded-2xl bg-secondary text-white font-bold text-base flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition">
+                        <span class="material-symbols-outlined text-xl">pets</span>
+                        아니요, 계속 받을게요
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ── STEP 2: 완료 ── -->
+    <div id="step-done" class="step">
+        <div id="done-card" class="form-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
+            <div class="p-10 text-center">
+                <div id="done-icon" class="text-6xl mb-6 floating">😿</div>
+                <h2 id="done-title" class="text-3xl font-black text-gray-900 dark:text-white mb-3"></h2>
+                <p id="done-message" class="text-gray-500 dark:text-gray-400 mb-8 leading-relaxed"></p>
+                <div class="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-1">
+                    <p class="text-sm text-gray-400 dark:text-gray-500">이 창은 닫으셔도 좋습니다</p>
+                    <p class="text-sm text-gray-400 dark:text-gray-500 italic">Feel free to close this tab</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script th:inline="javascript">
+    const TOKEN = /*[[${token}]]*/ '';
+</script>
+
+<script>
+    function showDone(success, title, message) {
+        if (!success) {
+            document.getElementById('done-card').style.boxShadow = '0 18px 35px rgba(248,113,113,0.22)';
+        }
+        document.getElementById('done-title').textContent = title;
+        document.getElementById('done-message').textContent = message;
+        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+        document.getElementById('step-done').classList.add('active');
+    }
+
+    document.getElementById('confirm-btn').addEventListener('click', async function () {
+        const btn = this;
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/subscriptions?token=' + encodeURIComponent(TOKEN), {
+                method: 'DELETE',
+            });
+
+            if (res.ok) {
+                showDone(true, '구독이 취소되었습니다.',
+                    '더 이상 메일이 발송되지 않습니다.\n언제든 다시 돌아와 주세요! 🐾');
+            } else {
+                showDone(false, '오류가 발생했습니다.',
+                    '구독 취소 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.');
+            }
+        } catch {
+            showDone(false, '네트워크 오류', '잠시 후 다시 시도해 주세요.');
+        }
+    });
+</script>
+</body>
+</html>

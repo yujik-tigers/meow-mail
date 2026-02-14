@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>수신 시간 변경 · Meow Mail</title>
+
+    <link rel="stylesheet" as="style" crossorigin
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+          rel="stylesheet"/>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#ffca45",
+                        secondary: "#a1c606",
+                        "pastel-bg": "#fffefc",
+                        "background-dark": "#081022",
+                    },
+                    fontFamily: {
+                        display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                        sans:    ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        body {
+            @apply bg-pastel-bg dark:bg-background-dark font-sans;
+        }
+
+        .form-card {
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        html.dark .form-card {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-8px); }
+        }
+        .floating { animation: float 3s ease-in-out infinite; }
+
+        .step { display: none; }
+        .step.active { display: block; }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6 transition-colors duration-300">
+
+<!-- 다크모드 토글 -->
+<button class="fixed top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-300 hover:scale-110 transition-transform"
+        onclick="document.documentElement.classList.toggle('dark')">
+    <span class="material-symbols-outlined text-xl">dark_mode</span>
+</button>
+
+<main class="max-w-lg w-full">
+
+    <!-- ── STEP 1: 시간 변경 폼 ── -->
+    <div id="step-form" class="step active">
+        <div class="form-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
+            <div class="p-10">
+
+                <!-- 헤더 -->
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 font-bold text-sm"
+                         style="background:rgba(161,198,6,0.15);color:#a1c606;">
+                        <span class="material-symbols-outlined text-lg">schedule</span>
+                        수신 시간 변경
+                    </div>
+                    <h1 class="text-3xl font-black text-gray-900 dark:text-white leading-tight mb-2">
+                        고양이 사진, 언제 받을까요?
+                    </h1>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">
+                        원하는 시간으로 변경하면 다음 날부터 적용됩니다.
+                    </p>
+                </div>
+
+                <!-- 이메일 (고정) -->
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                        이메일
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl pointer-events-none">
+                            mail
+                        </span>
+                        <div class="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400 text-sm"
+                             th:text="${email}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 현재 수신 시간 표시 -->
+                <div class="mb-5 flex items-center gap-2 px-4 py-3 rounded-2xl"
+                     style="background:rgba(255,202,69,0.12);">
+                    <span class="material-symbols-outlined text-base" style="color:#d4a017;">info</span>
+                    <p class="text-sm font-medium" style="color:#b8860b;">
+                        현재 수신 시간:
+                        <strong th:text="${currentTime}" class="font-black">00:00</strong>
+                    </p>
+                </div>
+
+                <!-- 새 수신 시간 -->
+                <div class="mb-7">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
+                           for="time">
+                        새 수신 시간
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl pointer-events-none">
+                            schedule
+                        </span>
+                        <select id="time" name="time"
+                                class="w-full pl-10 pr-10 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white appearance-none focus:outline-none focus:ring-2 focus:ring-secondary/40 focus:border-secondary transition cursor-pointer">
+                            <option value="" disabled selected>시간 선택</option>
+                        </select>
+                        <span class="absolute right-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl pointer-events-none">
+                            expand_more
+                        </span>
+                    </div>
+                    <p id="same-time-msg" class="hidden mt-1.5 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">info</span>
+                        현재 수신 시간과 동일합니다.
+                    </p>
+                </div>
+
+                <!-- 변경하기 버튼 -->
+                <button id="change-btn" type="button" disabled
+                        class="w-full py-3.5 rounded-2xl bg-secondary text-white font-bold text-base flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    <span class="material-symbols-outlined text-xl">schedule_send</span>
+                    시간 변경하기
+                </button>
+
+            </div>
+        </div>
+
+        <!-- 하단 칩 -->
+        <div class="mt-6 flex justify-center">
+            <div class="backdrop-blur-md px-4 py-2 rounded-full text-xs flex items-center gap-2 font-semibold bg-white/60 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400">
+                <span class="material-symbols-outlined text-sm">pets</span>
+                Meow Mail
+            </div>
+        </div>
+    </div>
+
+    <!-- ── STEP 2: 완료 ── -->
+    <div id="step-done" class="step">
+        <div id="done-card" class="form-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
+            <div class="p-10 text-center">
+                <div id="done-icon" class="text-6xl mb-6 floating">🐈</div>
+                <h2 id="done-title" class="text-3xl font-black text-gray-900 dark:text-white mb-3"></h2>
+                <p id="done-message" class="text-gray-500 dark:text-gray-400 mb-8 leading-relaxed"></p>
+                <div class="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-1">
+                    <p class="text-sm text-gray-400 dark:text-gray-500">이 창은 닫으셔도 좋습니다</p>
+                    <p class="text-sm text-gray-400 dark:text-gray-500 italic">Feel free to close this tab</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- 서버에서 주입된 값 -->
+<script th:inline="javascript">
+    const EMAIL = /*[[${email}]]*/ '';
+    const CURRENT_TIME = /*[[${currentTime}]]*/ '';
+</script>
+
+<script>
+    // ── 30분 단위 시간 옵션 생성 ──
+    (function () {
+        const select = document.getElementById('time');
+        for (let h = 0; h < 24; h++) {
+            for (let m of [0, 30]) {
+                const hh = String(h).padStart(2, '0');
+                const mm = String(m).padStart(2, '0');
+                const val = `${hh}:${mm}`;
+                const opt = new Option(val, val);
+                select.appendChild(opt);
+            }
+        }
+    })();
+
+    // ── 버튼 상태 관리 ──
+    function updateButtonState() {
+        const selected = document.getElementById('time').value;
+        const isSame = selected === CURRENT_TIME;
+
+        document.getElementById('same-time-msg').classList.toggle('hidden', !isSame || !selected);
+        document.getElementById('change-btn').disabled = !selected || isSame;
+    }
+
+    document.getElementById('time').addEventListener('change', updateButtonState);
+
+    // ── 완료 화면 ──
+    function showDone(success, title, message) {
+        document.getElementById('done-icon').textContent = success ? '🐈' : '😿';
+        document.getElementById('done-title').textContent = title;
+        document.getElementById('done-message').textContent = message;
+        if (!success) {
+            document.getElementById('done-card').style.boxShadow = '0 18px 35px rgba(248,113,113,0.22)';
+        }
+        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+        document.getElementById('step-done').classList.add('active');
+    }
+
+    // ── 변경 요청 ──
+    document.getElementById('change-btn').addEventListener('click', async function () {
+        const time = document.getElementById('time').value;
+        const btn = this;
+
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/subscriptions', {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: EMAIL, time}),
+            });
+
+            if (res.ok) {
+                showDone(true, '변경 완료!',
+                    `내일부터 매일 ${time}에 고양이 사진을 보내드릴게요. 🐾`);
+            } else {
+                const body = await res.json().catch(() => ({}));
+                showDone(false, '변경 실패', body.message || '변경 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.');
+            }
+        } catch {
+            showDone(false, '변경 실패', '네트워크 오류가 발생했어요. 잠시 후 다시 시도해 주세요.');
+        }
+    });
+</script>
+</body>
+</html>

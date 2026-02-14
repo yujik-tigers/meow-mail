@@ -3,6 +3,7 @@ package tigers.meowmail.exception;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +22,12 @@ public class GlobalExceptionHandler {
 			.forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 		ErrorResponse response = new ErrorResponse("Validation failed", errors);
 		return ResponseEntity.badRequest().body(response);
+	}
+
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException exception) {
+		ErrorResponse response = new ErrorResponse(exception.getMessage(), null);
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
 
 }

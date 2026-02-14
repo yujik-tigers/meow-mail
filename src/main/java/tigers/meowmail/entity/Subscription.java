@@ -43,7 +43,8 @@ public class Subscription {
 	@Column(nullable = false)
 	private Instant updatedAt;
 
-	public void markActive(Instant activeAt) {
+	public void markActive(String time, Instant activeAt) {
+		this.time = time;
 		this.status = SubscriptionStatus.ACTIVE;
 		this.startedAt = activeAt;
 		this.updatedAt = activeAt;

@@ -59,7 +59,7 @@ public class SubscriptionService {
 		if (subscriptionOpt.isPresent()) {
 			Subscription subscription = subscriptionOpt.get();
 			if (subscription.getStatus() == SubscriptionStatus.ACTIVE) {
-				throw new IllegalStateException("Subscription is already active.");
+				throw new IllegalStateException("이미 구독 중인 이메일입니다.");
 			}
 
 			subscription.updateTime(time, now);
@@ -130,10 +130,16 @@ public class SubscriptionService {
 		}
 
 		Subscription subscription = subscriptionOpt.get();
-		subscription.markActive(Instant.now(clock));
+		subscription.markActive(request.time(), Instant.now(clock));
 		subscriptionRepo.save(subscription);
 
 		return new MessageResponse("Your email has been successfully subscribed.");
+	}
+
+	public String getSubscriptionTime(String email) {
+		return subscriptionRepo.findByEmail(email.toLowerCase())
+			.map(Subscription::getTime)
+			.orElseThrow(() -> new IllegalStateException("Subscription not found"));
 	}
 
 	public MessageResponse resubscribe(SubscriptionRequest request) {

@@ -34,6 +34,8 @@ public class SubscriptionController {
 	private static final String VIEW_SUBSCRIBE = "view-subscribe";
 	private static final String VIEW_RESUBSCRIBE = "view-resubscribe";
 	private static final String VIEW_UNSUBSCRIBE = "view-unsubscribe";
+	private static final String VIEW_UNSUBSCRIBE_CONFIRM = "view-unsubscribe-confirm";
+	private static final String VIEW_VERIFY_RESULT = "view-verify-result";
 
 	@GetMapping("/subscribe")
 	public String showSubscriptionForm() {
@@ -43,9 +45,18 @@ public class SubscriptionController {
 	@GetMapping("/resubscribe")
 	public String showResubscriptionForm(@RequestParam String token, Model model) {
 		jwtProvider.validateToken(token, SUBSCRIPTION);
-		model.addAttribute("email", jwtProvider.getEmailFrom(token));
+		String email = jwtProvider.getEmailFrom(token);
+		model.addAttribute("email", email);
 		model.addAttribute("token", token);
+		model.addAttribute("currentTime", subscriptionService.getSubscriptionTime(email));
 		return VIEW_RESUBSCRIBE;
+	}
+
+	@GetMapping("/unsubscribe")
+	public String showUnsubscribeConfirm(@RequestParam String token, Model model) {
+		jwtProvider.validateToken(token, SUBSCRIPTION);
+		model.addAttribute("token", token);
+		return VIEW_UNSUBSCRIBE_CONFIRM;
 	}
 
 	@DeleteMapping("/api/subscriptions")
@@ -55,18 +66,21 @@ public class SubscriptionController {
 		return VIEW_UNSUBSCRIBE;
 	}
 
+	@GetMapping("/api/subscriptions/verify")
+	public String verify(@RequestParam String token, Model model) {
+		MessageResponse response = subscriptionService.verify(token);
+		boolean success = response.message().startsWith("Your email has been successfully");
+		model.addAttribute("success", success);
+		model.addAttribute("message", response.message());
+		return VIEW_VERIFY_RESULT;
+	}
+
+	// TODO: 동일한 출발지에서 계속 요청을 보내는 경우 횟수 제한
 	@ResponseBody
 	@PostMapping("/api/subscriptions/verify")
 	public ResponseEntity<MessageResponse> sendVerificationEmail(@Valid @RequestBody SubscriptionRequest request) {
 		MessageResponse response = subscriptionService.sendVerificationEmail(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	}
-
-	@ResponseBody
-	@GetMapping("/api/subscriptions/verify")
-	public ResponseEntity<MessageResponse> verify(@RequestParam String token) {
-		MessageResponse response = subscriptionService.verify(token);
-		return ResponseEntity.ok(response);
 	}
 
 	@ResponseBody
