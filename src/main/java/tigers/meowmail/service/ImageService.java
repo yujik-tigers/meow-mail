@@ -35,8 +35,7 @@ public class ImageService {
 	// 매일 22:00 KST에 다음 날 사진을 미리 받아 둠
 	@Scheduled(cron = "0 0 22 * * *", zone = "Asia/Seoul")
 	public void requestImageOfNextDay() {
-		// LocalDate tomorrow = LocalDate.now(KST).plusDays(1);
-		LocalDate tomorrow = LocalDate.now(KST);
+		LocalDate tomorrow = LocalDate.now(KST).plusDays(1);
 		String date = tomorrow.toString(); // "2026-01-01"
 
 		log.info("Requesting image for {}", date);
@@ -100,7 +99,7 @@ public class ImageService {
 			case "jpeg" -> ".jpg";
 			case "gif" -> ".gif";
 			case "webp" -> ".webp";
-			default -> ".png"; // image/png + 알 수 없는 타입
+			default -> ".png";
 		};
 	}
 

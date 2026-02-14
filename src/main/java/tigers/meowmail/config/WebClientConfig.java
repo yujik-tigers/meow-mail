@@ -11,7 +11,8 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class WebClientConfig {
 
-	private static final int MAX_BUFFER_SIZE = 10 * 1024 * 1024; // 5MB
+	// TODO: Properties Class
+	private static final int MAX_BUFFER_SIZE = 5 * 1024 * 1024; // 5MB
 
 	@Bean
 	public WebClient imageWebClient(ImageProperties imageProperties) {

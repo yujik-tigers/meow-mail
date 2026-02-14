@@ -60,8 +60,7 @@ public class EmailService {
 	@Scheduled(cron = "0 0,30 * * * *", zone = "Asia/Seoul")
 	public void sendImageEmail() {
 		ZonedDateTime nowKst = ZonedDateTime.now(KST);
-		// String currentTime = nowKst.format(TIME_FORMATTER); // "HH:mm"
-		String currentTime = "16:30"; // "HH:mm"
+		String currentTime = nowKst.format(TIME_FORMATTER); // "HH:mm"
 		String today = nowKst.toLocalDate().toString();  // "YYYY-MM-DD"
 
 		Path imagePath = imageService.findImagePath(today).orElse(null);
