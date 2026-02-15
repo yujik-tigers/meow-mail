@@ -33,11 +33,13 @@ public class ImageService {
 	}
 
 	// 매일 22:00 KST에 다음 날 사진을 미리 받아 둠
-	@Scheduled(cron = "0 0 22 * * *", zone = "Asia/Seoul")
+	@Scheduled(cron = "0 25 21 * * *", zone = "Asia/Seoul")
 	public void requestImageOfNextDay() {
 		LocalDate tomorrow = LocalDate.now(KST).plusDays(1);
-		String date = tomorrow.toString(); // "2026-01-01"
+		fetchAndSaveImage(tomorrow.toString());
+	}
 
+	public void fetchAndSaveImage(String date) {
 		log.info("Requesting image for {}", date);
 
 		ImageData imageData = imageWebClient.post()

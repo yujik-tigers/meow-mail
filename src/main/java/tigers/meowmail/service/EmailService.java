@@ -63,9 +63,13 @@ public class EmailService {
 		String currentTime = nowKst.format(TIME_FORMATTER); // "HH:mm"
 		String today = nowKst.toLocalDate().toString();  // "YYYY-MM-DD"
 
-		Path imagePath = imageService.findImagePath(today).orElse(null);
+		Path imagePath = imageService.findImagePath(today).orElseGet(() -> {
+			log.warn("No image found for today ({}). Fetching now.", today);
+			imageService.fetchAndSaveImage(today);
+			return imageService.findImagePath(today).orElse(null);
+		});
 		if (imagePath == null) {
-			log.warn("No image found for today ({}). Skipping email dispatch.", today);
+			log.warn("Image unavailable for today ({}). Skipping email dispatch.", today);
 			return;
 		}
 
