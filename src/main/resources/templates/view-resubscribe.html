@@ -26,7 +26,7 @@
                     },
                     fontFamily: {
                         display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-                        sans:    ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                        sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
                     },
                 },
             },
@@ -50,13 +50,25 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-8px); }
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
         }
-        .floating { animation: float 3s ease-in-out infinite; }
 
-        .step { display: none; }
-        .step.active { display: block; }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
     </style>
 </head>
 
@@ -77,16 +89,11 @@
 
                 <!-- 헤더 -->
                 <div class="text-center mb-8">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 font-bold text-sm"
-                         style="background:rgba(161,198,6,0.15);color:#a1c606;">
-                        <span class="material-symbols-outlined text-lg">schedule</span>
-                        수신 시간 변경
-                    </div>
-                    <h1 class="text-3xl font-black text-gray-900 dark:text-white leading-tight mb-2">
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white leading-tight mb-2">
                         고양이 사진, 언제 받을까요?
                     </h1>
                     <p class="text-gray-500 dark:text-gray-400 text-sm">
-                        원하는 시간으로 변경하면 다음 날부터 적용됩니다.
+                        원하는 시간으로 변경하면 다음 날부터 적용돼요
                     </p>
                 </div>
 
@@ -129,13 +136,10 @@
                                 class="w-full pl-10 pr-10 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white appearance-none focus:outline-none focus:ring-2 focus:ring-secondary/40 focus:border-secondary transition cursor-pointer">
                             <option value="" disabled selected>시간 선택</option>
                         </select>
-                        <span class="absolute right-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl pointer-events-none">
-                            expand_more
-                        </span>
                     </div>
                     <p id="same-time-msg" class="hidden mt-1.5 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm">info</span>
-                        현재 수신 시간과 동일합니다.
+                        현재 수신 시간과 동일해요
                     </p>
                 </div>
 
@@ -152,8 +156,10 @@
         <!-- 하단 칩 -->
         <div class="mt-6 flex justify-center">
             <div class="backdrop-blur-md px-4 py-2 rounded-full text-xs flex items-center gap-2 font-semibold bg-white/60 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400">
-                <span class="material-symbols-outlined text-sm">pets</span>
-                Meow Mail
+                <span class="material-symbols-outlined text-sm">mail</span>
+                <a href="mailto:dev.mail.meow@gmail.com">
+                    묘한 아이디어 제보하기
+                </a>
             </div>
         </div>
     </div>
@@ -167,7 +173,6 @@
                 <p id="done-message" class="text-gray-500 dark:text-gray-400 mb-8 leading-relaxed"></p>
                 <div class="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-1">
                     <p class="text-sm text-gray-400 dark:text-gray-500">이 창은 닫으셔도 좋습니다</p>
-                    <p class="text-sm text-gray-400 dark:text-gray-500 italic">Feel free to close this tab</p>
                 </div>
             </div>
         </div>

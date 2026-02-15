@@ -26,7 +26,7 @@
                     },
                     fontFamily: {
                         display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-                        sans:    ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                        sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
                     },
                 },
             },
@@ -50,18 +50,31 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-8px); }
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
         }
-        .floating { animation: float 3s ease-in-out infinite; }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
 
         /* 단계 전환 */
-        .step { display: none; }
-        .step.active { display: block; }
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
 
         .input-error {
             @apply border-red-400 focus:ring-red-300 !important;
         }
+
         .input-verified {
             @apply border-secondary focus:ring-secondary/40 !important;
         }
@@ -85,16 +98,15 @@
 
                 <!-- 헤더 -->
                 <div class="text-center mb-8">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 font-bold text-sm"
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 font-semibold text-sm"
                          style="background:rgba(161,198,6,0.15);color:#a1c606;">
-                        <span class="material-symbols-outlined text-lg">pets</span>
-                        Meow Mail
+                        매일묘일
                     </div>
-                    <h1 class="text-3xl font-black text-gray-900 dark:text-white leading-tight mb-2">
-                        매일 귀여운 고양이 사진 받기
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white leading-tight mb-2">
+                        고양이 편지 배송 서비스
                     </h1>
                     <p class="text-gray-500 dark:text-gray-400 text-sm">
-                        원하는 시간에 딱 한 장, 매일 고양이 사진을 보내드려요.
+                        매일 원하는 시간에 딱 한 장, 고양이 편지를 보내드려요
                     </p>
                 </div>
 
@@ -116,7 +128,6 @@
                         </div>
                         <button id="send-verify-btn" type="button" disabled
                                 class="shrink-0 px-4 py-3 rounded-2xl bg-secondary text-white font-bold text-sm flex items-center gap-1.5 hover:brightness-105 active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
-                            <span id="verify-btn-icon" class="material-symbols-outlined text-base">mark_email_unread</span>
                             <svg id="verify-btn-spinner" class="hidden animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
@@ -174,12 +185,9 @@
                             schedule
                         </span>
                         <select id="time" name="time"
-                                class="w-full pl-10 pr-10 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white appearance-none focus:outline-none focus:ring-2 focus:ring-secondary/40 focus:border-secondary transition cursor-pointer">
+                                class="w-full pl-10 pr-10 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 text-sm dark:text-white appearance-none focus:outline-none focus:ring-2 focus:ring-secondary/40 focus:border-secondary transition cursor-pointer">
                             <option value="" disabled selected>시간 선택</option>
                         </select>
-                        <span class="absolute right-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl pointer-events-none">
-                            expand_more
-                        </span>
                     </div>
                 </div>
 
@@ -191,7 +199,7 @@
                 </button>
 
                 <p class="mt-4 text-center text-xs text-gray-400 dark:text-gray-500">
-                    이메일 인증 후 구독이 완료됩니다.
+                    이메일 인증 후 구독할 수 있어요
                 </p>
             </div>
         </div>
@@ -200,11 +208,13 @@
         <div class="mt-6 flex flex-wrap justify-center gap-3">
             <div class="backdrop-blur-md px-4 py-2 rounded-full text-xs flex items-center gap-2 font-semibold bg-white/60 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400">
                 <span class="material-symbols-outlined text-sm">verified</span>
-                100% Cat Approved
+                냥님 검수 완료
             </div>
             <div class="backdrop-blur-md px-4 py-2 rounded-full text-xs flex items-center gap-2 font-semibold bg-white/60 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400">
                 <span class="material-symbols-outlined text-sm">mail</span>
-                subscribe.mail.meow@gmail.com
+                <a href="mailto:dev.mail.meow@gmail.com">
+                    묘한 아이디어 제보하기
+                </a>
             </div>
         </div>
     </div>
@@ -251,8 +261,13 @@
             .forEach(id => document.getElementById(id).classList.add('hidden'));
     }
 
-    function show(id) { document.getElementById(id).classList.remove('hidden'); }
-    function hide(id) { document.getElementById(id).classList.add('hidden'); }
+    function show(id) {
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function hide(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
 
     // ── 상태 변수 ──
     let verified = false;
@@ -291,7 +306,10 @@
                     show('verify-expired');
                     document.getElementById('email').classList.remove('input-verified');
                     updateSendBtnState();
-                    if (activeEvtSource) { activeEvtSource.close(); activeEvtSource = null; }
+                    if (activeEvtSource) {
+                        activeEvtSource.close();
+                        activeEvtSource = null;
+                    }
                     stopPolling();
                 }
             }
@@ -319,19 +337,26 @@
     function startPolling(email) {
         stopPolling();
         pollInterval = setInterval(async () => {
-            if (verified) { stopPolling(); return; }
+            if (verified) {
+                stopPolling();
+                return;
+            }
             try {
                 const res = await fetch(`/api/subscriptions/verify/status?email=${encodeURIComponent(email)}`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.verified) onVerificationSuccess();
                 }
-            } catch { /* 네트워크 오류 무시 */ }
+            } catch { /* 네트워크 오류 무시 */
+            }
         }, 2000);
     }
 
     function stopPolling() {
-        if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+        if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+        }
     }
 
     // ── SSE 연결 ──
