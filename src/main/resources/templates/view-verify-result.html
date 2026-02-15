@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title th:text="${success} ? '이메일 인증 완료 · Meow Mail' : '이메일 인증 실패 · Meow Mail'">Meow Mail</title>
+    <title th:text="${success} ? '이메일 인증 완료 · 매일묘일' : '이메일 인증 실패 · 매일묘일'">매일묘일</title>
 
     <link rel="stylesheet" as="style" crossorigin
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
@@ -26,7 +26,7 @@
                     },
                     fontFamily: {
                         display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-                        sans:    ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                        sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
                     },
                 },
             },
@@ -62,10 +62,17 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-8px); }
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
         }
-        .floating { animation: float 3s ease-in-out infinite; }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
     </style>
 </head>
 
@@ -96,29 +103,23 @@
             <div class="text-7xl mb-8 floating" th:text="${success} ? '🐈' : '😿'">🐈</div>
 
             <!-- 제목 -->
-            <h1 class="text-3xl font-black mb-4 leading-tight"
+            <h1 class="text-2xl font-bold mb-4 leading-tight"
                 th:classappend="${success} ? ' text-gray-900 dark:text-white' : ' text-red-700 dark:text-red-400'"
-                th:text="${success} ? '이메일 인증 완료!' : '이메일 인증 실패'">
+                th:text="${success} ? '구독 이메일 인증 완료!' : '구독 이메일 인증 실패'">
                 이메일 인증 완료!
             </h1>
 
             <!-- 메시지 -->
             <div th:if="${success}">
                 <p class="text-gray-600 dark:text-gray-400 mb-2 leading-relaxed">
-                    이메일 인증이 성공적으로 완료되었습니다.<br/>
+                    이메일 인증에 성공했어요.<br/>
                     이제 구독 페이지에서 구독하기 버튼을 눌러 주세요.
-                </p>
-                <p class="text-gray-400 dark:text-gray-500 text-sm italic">
-                    Your email has been successfully verified.
                 </p>
             </div>
             <div th:unless="${success}">
                 <p class="text-gray-600 dark:text-gray-400 mb-2 leading-relaxed">
                     이메일 인증에 실패했어요.<br/>
-                    인증 링크가 만료되었거나 유효하지 않습니다.
-                </p>
-                <p class="text-gray-400 dark:text-gray-500 text-sm italic">
-                    The verification link may have expired or is invalid.
+                    인증 링크가 만료되었거나 유효하지 않아요.
                 </p>
                 <p class="mt-4 text-sm text-red-400 dark:text-red-500 bg-red-50 dark:bg-red-950/30 rounded-2xl px-4 py-2"
                    th:text="${message}">
@@ -127,18 +128,9 @@
 
             <!-- 구분선 + 안내 -->
             <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 space-y-1">
-                <p class="text-sm text-gray-400 dark:text-gray-500">이 창은 닫으셔도 좋습니다</p>
-                <p class="text-sm text-gray-400 dark:text-gray-500 italic">Feel free to close this tab</p>
+                <p class="text-sm text-gray-400 dark:text-gray-500">이 창은 닫아도 돼요</p>
             </div>
 
-        </div>
-    </div>
-
-    <!-- 하단 칩 -->
-    <div class="mt-6 flex justify-center">
-        <div class="backdrop-blur-md px-4 py-2 rounded-full text-xs flex items-center gap-2 font-semibold bg-white/60 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400">
-            <span class="material-symbols-outlined text-sm">pets</span>
-            Meow Mail
         </div>
     </div>
 </main>

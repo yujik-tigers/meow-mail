@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Meow Mail 구독</title>
+    <title>구독 신청 · 매일묘일</title>
 
     <link rel="stylesheet" as="style" crossorigin
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
@@ -139,6 +139,9 @@
 
                 <!-- 이메일 하단 상태 영역 -->
                 <div id="email-status" class="mb-5 min-h-[1.5rem]">
+                    <p id="email-hint" class="mt-4 text-xs text-gray-400 dark:text-gray-500">
+                        이메일 인증 후 구독할 수 있어요
+                    </p>
                     <!-- 에러 메시지 -->
                     <p id="email-error" class="hidden text-xs text-red-500 flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm">error</span>
@@ -196,10 +199,6 @@
                     <span class="material-symbols-outlined text-xl">pets</span>
                     구독하기
                 </button>
-
-                <p class="mt-4 text-center text-xs text-gray-400 dark:text-gray-500">
-                    이메일 인증 후 구독할 수 있어요
-                </p>
             </div>
         </div>
 
@@ -258,10 +257,12 @@
     function hideAllEmailStatus() {
         ['email-error', 'verify-pending', 'verify-expired', 'verify-success', 'verify-fail']
             .forEach(id => document.getElementById(id).classList.add('hidden'));
+        document.getElementById('email-hint').classList.remove('hidden');
     }
 
     function show(id) {
         document.getElementById(id).classList.remove('hidden');
+        document.getElementById('email-hint').classList.add('hidden');
     }
 
     function hide(id) {
@@ -472,7 +473,7 @@
 
             if (res.ok) {
                 showDone(true, '구독 완료!',
-                    `${email}으로 매일 ${time}에 귀여운 고양이 사진을 보내드릴게요. 🐾`);
+                    `${email}으로 매일 ${time}에 귀여운 고양이 편지를 보내드릴게요. 🐾`);
             } else {
                 const body = await res.json().catch(() => ({}));
                 showDone(false, '구독 실패', body.message || '구독 중 오류가 발생했어요.');
@@ -496,16 +497,20 @@
 
     // ── 이벤트 리스너 ──
     document.getElementById('email').addEventListener('input', function () {
-        if (verified) return; // 인증 완료 후 수정 불가
-        const v = this.value.trim();
+        if (verified) return;
         hideAllEmailStatus();
         this.classList.remove('input-error', 'input-verified');
+        updateSendBtnState();
+    });
+
+    document.getElementById('email').addEventListener('blur', function () {
+        if (verified) return;
+        const v = this.value.trim();
         if (v && !isValidEmail(v)) {
             show('email-error');
-            document.getElementById('email-error-msg').textContent = '올바른 이메일 형식이 아닙니다.';
+            document.getElementById('email-error-msg').textContent = '이메일 형식을 다시 확인해 주세요';
             this.classList.add('input-error');
         }
-        updateSendBtnState();
     });
 
     document.getElementById('time').addEventListener('change', updateSubscribeBtnState);

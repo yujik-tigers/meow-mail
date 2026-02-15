@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title th:text="${result.title} + ' · Meow Mail'">구독 취소 · Meow Mail</title>
+    <title th:text="${result.title} + ' · 매일묘일'">구독 취소 · 매일묘일</title>
 
     <link rel="stylesheet" as="style" crossorigin
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
@@ -26,7 +26,7 @@
                     },
                     fontFamily: {
                         display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-                        sans:    ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                        sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
                     },
                 },
             },
@@ -62,10 +62,17 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-8px); }
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
         }
-        .floating { animation: float 3s ease-in-out infinite; }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
     </style>
 </head>
 
@@ -116,18 +123,9 @@
 
             <!-- 구분선 + 안내 -->
             <div class="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-1">
-                <p class="text-sm text-gray-400 dark:text-gray-500">이 창은 닫으셔도 좋습니다</p>
-                <p class="text-sm text-gray-400 dark:text-gray-500 italic">Feel free to close this tab</p>
+                <p class="text-sm text-gray-400 dark:text-gray-500">이 창은 닫아도 돼요</p>
             </div>
 
-        </div>
-    </div>
-
-    <!-- 하단 칩 -->
-    <div class="mt-6 flex justify-center">
-        <div class="backdrop-blur-md px-4 py-2 rounded-full text-xs flex items-center gap-2 font-semibold bg-white/60 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400">
-            <span class="material-symbols-outlined text-sm">pets</span>
-            Meow Mail
         </div>
     </div>
 </main>

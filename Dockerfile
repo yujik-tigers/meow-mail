@@ -18,7 +18,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-RUN mkdir -p /app/images && chown -R appuser:appgroup /app
+RUN mkdir -p /app/contents/images && chown -R appuser:appgroup /app
 
 USER appuser
 
