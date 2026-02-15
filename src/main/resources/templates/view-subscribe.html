@@ -396,7 +396,6 @@
 
     // ── 인증 버튼 로딩 상태 ──
     function setVerifyBtnLoading(loading) {
-        document.getElementById('verify-btn-icon').classList.toggle('hidden', loading);
         document.getElementById('verify-btn-spinner').classList.toggle('hidden', !loading);
         document.getElementById('verify-btn-label').textContent = loading ? '전송 중…' : '인증하기';
     }

@@ -32,7 +32,7 @@ public class EmailService {
 	private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 	private static final String SUBJECT_SUBSCRIPTION_VERIFICATION = "[매일묘일] 구독 이메일 인증";
-	private static final String SUBJECT_DAILY_CAT = "오늘의 고양이 사진이 도착했어요 🐾";
+	private static final String SUBJECT_DAILY_CAT = "[매일묘일] 고양이 편지가 도착했어요 🐾";
 	private static final String EMAIL_SUBSCRIPTION_VERIFICATION = "email-subscription-verification";
 	private static final String EMAIL_DAILY_CAT = "email-daily-cat";
 	private static final String IMAGE_CONTENT_ID = "catImage";
@@ -72,7 +72,7 @@ public class EmailService {
 
 		List<Subscription> targets = subscriptionRepository.findByStatusAndTime(SubscriptionStatus.ACTIVE, currentTime);
 		if (targets.isEmpty()) {
-			log.debug("No active subscribers for time {}", currentTime);
+			log.info("No active subscribers for time {}", currentTime);
 			return;
 		}
 
