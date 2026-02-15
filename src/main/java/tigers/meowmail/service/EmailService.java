@@ -6,7 +6,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,6 +18,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import tigers.meowmail.config.properties.AppProperties;
 import tigers.meowmail.entity.Subscription;
 import tigers.meowmail.entity.SubscriptionStatus;
 import tigers.meowmail.repository.SubscriptionRepository;
@@ -31,7 +31,7 @@ public class EmailService {
 
 	private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-	private static final String SUBJECT_SUBSCRIPTION_VERIFICATION = "Subscription email verification";
+	private static final String SUBJECT_SUBSCRIPTION_VERIFICATION = "[매일묘일] 구독 이메일 인증";
 	private static final String SUBJECT_DAILY_CAT = "오늘의 고양이 사진이 도착했어요 🐾";
 	private static final String EMAIL_SUBSCRIPTION_VERIFICATION = "email-subscription-verification";
 	private static final String EMAIL_DAILY_CAT = "email-daily-cat";
@@ -42,13 +42,10 @@ public class EmailService {
 	private final ImageService imageService;
 	private final SubscriptionRepository subscriptionRepository;
 	private final JwtProvider jwtProvider;
-
-	// TODO: Properties Class
-	@Value("${app.base-url}")
-	private String baseUrl;
+	private final AppProperties appProperties;
 
 	public void sendVerificationEmail(String email, String token) {
-		String verificationUrl = baseUrl + "/api/subscriptions/verify?token=" + token;
+		String verificationUrl = appProperties.baseUrl() + "/api/subscriptions/verify?token=" + token;
 
 		Context context = new Context();
 		context.setVariable("verificationUrl", verificationUrl);
@@ -88,8 +85,8 @@ public class EmailService {
 
 			Context context = new Context();
 			context.setVariable("date", today);
-			context.setVariable("resubscribeUrl", baseUrl + "/resubscribe?token=" + token);
-			context.setVariable("unsubscribeUrl", baseUrl + "/unsubscribe?token=" + token);
+			context.setVariable("resubscribeUrl", appProperties.baseUrl() + "/resubscribe?token=" + token);
+			context.setVariable("unsubscribeUrl", appProperties.baseUrl() + "/unsubscribe?token=" + token);
 
 			String htmlContent = templateEngine.process(EMAIL_DAILY_CAT, context);
 			sendMailWithInlineImage(subscriber.getEmail(), SUBJECT_DAILY_CAT, htmlContent, imageResource);

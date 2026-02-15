@@ -75,6 +75,13 @@ public class SubscriptionController {
 		return VIEW_VERIFY_RESULT;
 	}
 
+	@ResponseBody
+	@GetMapping("/api/subscriptions/verify/status")
+	public ResponseEntity<java.util.Map<String, Boolean>> getVerificationStatus(@RequestParam String email) {
+		boolean verified = subscriptionService.isVerified(email);
+		return ResponseEntity.ok(java.util.Map.of("verified", verified));
+	}
+
 	// TODO: 동일한 출발지에서 계속 요청을 보내는 경우 횟수 제한
 	@ResponseBody
 	@PostMapping("/api/subscriptions/verify")

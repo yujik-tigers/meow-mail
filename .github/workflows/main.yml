@@ -80,7 +80,7 @@ jobs:
               --network meow-network \
               -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE=prod \
-              -v /home/${{ secrets.EC2_USERNAME }}/images:/app/images \
+              -v /home/${{ secrets.EC2_USERNAME }}/images:/app/contents/images \
               ${{ secrets.DOCKERHUB_USERNAME }}/meow-mail:latest
 
       - name: Remove Runner IP from Security Group

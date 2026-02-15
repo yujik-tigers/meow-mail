@@ -14,7 +14,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import tigers.meowmail.config.JwtProperties;
+import tigers.meowmail.config.properties.JwtProperties;
 import tigers.meowmail.exception.InvalidTokenException;
 
 @Component

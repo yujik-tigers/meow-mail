@@ -1,4 +1,4 @@
-package tigers.meowmail.config;
+package tigers.meowmail.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -78,11 +78,12 @@ public class SubscriptionService {
 
 	public SseEmitter openEmitter(String email) {
 		SseEmitter emitter = new SseEmitter(600_000L); // 10m
+		String normalizedEmail = email.toLowerCase();
 
-		emitter.onCompletion(() -> emitterRepository.delete(email));
-		emitter.onTimeout(() -> emitterRepository.delete(email));
+		emitter.onCompletion(() -> emitterRepository.delete(normalizedEmail));
+		emitter.onTimeout(() -> emitterRepository.delete(normalizedEmail));
 
-		emitterRepository.save(email, emitter);
+		emitterRepository.save(normalizedEmail, emitter);
 
 		// 첫 연결 시 더미 데이터 전송
 		try {
@@ -102,12 +103,22 @@ public class SubscriptionService {
 			jwtProvider.validateToken(token, VERIFICATION);
 
 			email = jwtProvider.getEmailFrom(token);
+			subscriptionRepo.findByEmail(email).ifPresent(subscription -> {
+				subscription.markVerified(Instant.now(clock));
+				subscriptionRepo.save(subscription);
+			});
 			sendSseEvent(email, "verified", "success", "Your email has been successfully verified.");
 			return new MessageResponse("Your email has been successfully verified.");
 		} catch (Exception e) {
 			sendSseEvent(email, "verified", "fail", "Email verification failed: " + e.getMessage());
 			return new MessageResponse("Email verification failed.");
 		}
+	}
+
+	public boolean isVerified(String email) {
+		return subscriptionRepo.findByEmail(email.toLowerCase())
+			.map(s -> s.getStatus() == SubscriptionStatus.VERIFIED || s.getStatus() == SubscriptionStatus.ACTIVE)
+			.orElse(false);
 	}
 
 	private void sendSseEvent(String email, String name, String status, String message) {
@@ -124,12 +135,13 @@ public class SubscriptionService {
 	}
 
 	public MessageResponse subscribe(SubscriptionRequest request) {
-		Optional<Subscription> subscriptionOpt = subscriptionRepo.findByEmail(request.email());
-		if (subscriptionOpt.isEmpty()) {
-			throw new RuntimeException("No verified email information found.");
+		Subscription subscription = subscriptionRepo.findByEmail(request.email().toLowerCase())
+			.orElseThrow(() -> new RuntimeException("No verified email information found."));
+
+		if (subscription.getStatus() != SubscriptionStatus.VERIFIED) {
+			throw new IllegalStateException("Email verification is required before subscribing.");
 		}
 
-		Subscription subscription = subscriptionOpt.get();
 		subscription.markActive(request.time(), Instant.now(clock));
 		subscriptionRepo.save(subscription);
 

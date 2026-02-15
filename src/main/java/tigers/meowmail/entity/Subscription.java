@@ -55,6 +55,11 @@ public class Subscription {
 		this.updatedAt = inactiveAt;
 	}
 
+	public void markVerified(Instant verifiedAt) {
+		this.status = SubscriptionStatus.VERIFIED;
+		this.updatedAt = verifiedAt;
+	}
+
 	public void updateTime(String time, Instant updatedAt) {
 		this.time = time;
 		this.updatedAt = updatedAt;

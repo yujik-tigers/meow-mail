@@ -7,18 +7,16 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import reactor.netty.http.client.HttpClient;
+import tigers.meowmail.config.properties.ImageProperties;
 
 @Configuration
 public class WebClientConfig {
-
-	// TODO: Properties Class
-	private static final int MAX_BUFFER_SIZE = 5 * 1024 * 1024; // 5MB
 
 	@Bean
 	public WebClient imageWebClient(ImageProperties imageProperties) {
 		HttpClient httpClient = HttpClient.create().followRedirect(true);
 		ExchangeStrategies strategies = ExchangeStrategies.builder()
-			.codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(MAX_BUFFER_SIZE))
+			.codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(imageProperties.maxBufferSize()))
 			.build();
 
 		return WebClient.builder()

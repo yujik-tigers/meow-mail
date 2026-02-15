@@ -258,6 +258,8 @@
     let verified = false;
     let timerInterval = null;
     let activeEvtSource = null;
+    let pollInterval = null;
+    let currentEmail = null;
 
     // ── 버튼 활성화 ──
     function updateSendBtnState() {
@@ -288,15 +290,48 @@
                     hideAllEmailStatus();
                     show('verify-expired');
                     document.getElementById('email').classList.remove('input-verified');
-                    // 인증 버튼 재활성화 (재발송 가능)
                     updateSendBtnState();
-                    if (activeEvtSource) {
-                        activeEvtSource.close();
-                        activeEvtSource = null;
-                    }
+                    if (activeEvtSource) { activeEvtSource.close(); activeEvtSource = null; }
+                    stopPolling();
                 }
             }
         }, 1000);
+    }
+
+    // ── 인증 성공 처리 (SSE/폴링 공통) ──
+    function onVerificationSuccess() {
+        if (verified) return;
+        verified = true;
+        clearInterval(timerInterval);
+        stopPolling();
+        if (activeEvtSource) {
+            activeEvtSource.close();
+            activeEvtSource = null;
+        }
+        hideAllEmailStatus();
+        document.getElementById('email').classList.add('input-verified');
+        document.getElementById('email').readOnly = true;
+        show('verify-success');
+        updateSubscribeBtnState();
+    }
+
+    // ── 폴링 폴백 ──
+    function startPolling(email) {
+        stopPolling();
+        pollInterval = setInterval(async () => {
+            if (verified) { stopPolling(); return; }
+            try {
+                const res = await fetch(`/api/subscriptions/verify/status?email=${encodeURIComponent(email)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.verified) onVerificationSuccess();
+                }
+            } catch { /* 네트워크 오류 무시 */ }
+        }, 2000);
+    }
+
+    function stopPolling() {
+        if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
     }
 
     // ── SSE 연결 ──
@@ -311,29 +346,26 @@
         evtSource.addEventListener('verified', function (e) {
             evtSource.close();
             activeEvtSource = null;
-            clearInterval(timerInterval);
 
             const data = JSON.parse(e.data);
-            hideAllEmailStatus();
-
             if (data.code === 'success') {
-                verified = true;
-                document.getElementById('email').classList.add('input-verified');
-                document.getElementById('email').readOnly = true;
-                show('verify-success');
-                updateSubscribeBtnState();
+                onVerificationSuccess();
             } else {
+                stopPolling();
+                clearInterval(timerInterval);
+                hideAllEmailStatus();
                 show('verify-fail');
                 document.getElementById('verify-fail-msg').textContent =
                     data.message || '이메일 인증에 실패했어요. 다시 시도해 주세요.';
-                updateSendBtnState(); // 재발송 가능하도록
+                updateSendBtnState();
             }
         });
 
         evtSource.onerror = function () {
-            // SSE 연결 오류 시 조용히 닫음 (타이머는 계속 진행)
+            // SSE 연결 오류 시 폴링으로 전환
             evtSource.close();
             activeEvtSource = null;
+            if (!verified) startPolling(email);
         };
     }
 
@@ -354,6 +386,8 @@
         setVerifyBtnLoading(true);
         hideAllEmailStatus();
         verified = false;
+        currentEmail = email;
+        stopPolling();
         document.getElementById('email').classList.remove('input-verified');
         document.getElementById('email').readOnly = false;
         updateSubscribeBtnState();
