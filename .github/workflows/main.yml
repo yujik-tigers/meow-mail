@@ -75,9 +75,13 @@ jobs:
 
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/meow-mail:latest
 
+            CURRENT_UID=$(id -u)
+            CURRENT_GID=$(id -g)
+            
             docker run -d \
               --name meow-mail \
               --network meow-network \
+              --user $CURRENT_UID:$CURRENT_GID \
               -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE=prod \
               -v /home/${{ secrets.EC2_USERNAME }}/images:/app/contents/images \
