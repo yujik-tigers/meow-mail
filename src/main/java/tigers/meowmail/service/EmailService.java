@@ -54,7 +54,7 @@ public class EmailService {
 	}
 
 	// 매 시 00분, 30분마다 해당 시각을 구독 시간으로 설정한 ACTIVE 구독자에게 발송
-	@Scheduled(cron = "0 0,30 * * * *", zone = "Asia/Seoul")
+	@Scheduled(cron = "0 0,30,40 * * * *", zone = "Asia/Seoul")
 	public void sendImageEmail() {
 		ZonedDateTime nowKst = ZonedDateTime.now(KST);
 		String currentTime = nowKst.format(TIME_FORMATTER); // "HH:mm"
