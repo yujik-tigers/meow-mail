@@ -59,7 +59,7 @@ public class SubscriptionService {
 		if (subscriptionOpt.isPresent()) {
 			Subscription subscription = subscriptionOpt.get();
 			if (subscription.getStatus() == SubscriptionStatus.ACTIVE) {
-				throw new IllegalStateException("이미 구독 중인 이메일입니다.");
+				throw new IllegalStateException("이미 구독 중인 이메일이에요");
 			}
 
 			subscription.updateTime(time, now);

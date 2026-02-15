@@ -148,7 +148,6 @@
                     <div id="verify-pending" class="hidden">
                         <div class="flex items-center justify-between mt-1.5">
                             <p class="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm">hourglass_top</span>
                                 인증 메일을 보냈어요. 메일함을 확인해 주세요.
                             </p>
                             <span id="timer"
@@ -411,6 +410,10 @@
         hideAllEmailStatus();
         verified = false;
         currentEmail = email;
+        if (activeEvtSource) {
+            activeEvtSource.close();
+            activeEvtSource = null;
+        }
         stopPolling();
         document.getElementById('email').classList.remove('input-verified');
         document.getElementById('email').readOnly = false;

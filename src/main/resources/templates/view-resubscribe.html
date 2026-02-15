@@ -244,9 +244,11 @@
             } else {
                 const body = await res.json().catch(() => ({}));
                 showDone(false, '변경 실패', body.message || '변경 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.');
+                btn.disabled = false;
             }
         } catch {
             showDone(false, '변경 실패', '네트워크 오류가 발생했어요. 잠시 후 다시 시도해 주세요.');
+            btn.disabled = false;
         }
     });
 </script>
