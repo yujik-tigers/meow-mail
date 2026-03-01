@@ -1,0 +1,45 @@
+body {
+    @apply bg-pastel-bg dark:bg-background-dark font-sans;
+}
+
+.form-card {
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
+}
+
+html.dark .form-card {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* 단계 전환 */
+.step {
+    display: none;
+}
+
+.step.active {
+    display: block;
+}
+
+.input-error {
+    @apply border-red-400 focus:ring-red-300 !important;
+}
+
+.input-verified {
+    @apply border-secondary focus:ring-secondary/40 !important;
+}

@@ -11,61 +11,115 @@
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
        style="background-color:#f6f5f0;">
     <tr>
-        <td align="center" style="padding:48px 16px 40px;">
+        <td align="center" style="padding:48px 0 40px;">
 
-            <!-- 즉석 사진 카드 -->
-            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
-                   style="width:768px;background-color:#ffffff;
-                          box-shadow:0 4px 6px rgba(0,0,0,0.08),0 12px 32px rgba(0,0,0,0.10),2px 2px 0 #e8e4de;
-                          border-radius:2px;">
+            <!-- 가로 스크롤 컨테이너 -->
+            <div style="width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                       style="width:auto;margin:0 auto;">
+                    <tr>
+                        <!-- 즉석 사진 카드 1 (영어) -->
+                        <td style="padding:0 12px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                                   style="width:400px;background-color:#ffffff;
+                                          box-shadow:0 4px 6px rgba(0,0,0,0.08),0 12px 32px rgba(0,0,0,0.10),2px 2px 0 #e8e4de;
+                                          border-radius:2px;">
+                                <tr>
+                                    <td style="padding:16px 16px 0;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0 16px;">
+                                        <img src="cid:catImageEng"
+                                             alt="오늘의 고양이 사진 (영어)"
+                                             width="368"
+                                             style="display:block;width:100%;height:auto;border:none;"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="padding:18px 16px 22px;">
+                                        <p style="margin:0;font-size:15px;color:#b0a89a;
+                                                  font-family:'Courier New',Courier,monospace;
+                                                  letter-spacing:0.08em;"
+                                           th:text="${date}"></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
 
-                <!-- 상단 여백 (즉석 사진 특유의 흰 테두리) -->
-                <tr>
-                    <td style="padding:16px 16px 0;"></td>
-                </tr>
+                        <!-- 즉석 사진 카드 2 (한국어) -->
+                        <td style="padding:0 12px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                                   style="width:400px;background-color:#ffffff;
+                                          box-shadow:0 4px 6px rgba(0,0,0,0.08),0 12px 32px rgba(0,0,0,0.10),2px 2px 0 #e8e4de;
+                                          border-radius:2px;">
+                                <tr>
+                                    <td style="padding:16px 16px 0;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0 16px;">
+                                        <img src="cid:catImageKor"
+                                             alt="오늘의 고양이 사진 (한국어)"
+                                             width="368"
+                                             style="display:block;width:100%;height:auto;border:none;"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="padding:18px 16px 22px;">
+                                        <p style="margin:0;font-size:15px;color:#b0a89a;
+                                                  font-family:'Courier New',Courier,monospace;
+                                                  letter-spacing:0.08em;"
+                                           th:text="${date}"></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
 
-                <!-- 사진 -->
-                <tr>
-                    <td style="padding:0 16px;">
-                        <img src="cid:catImage"
-                             alt="오늘의 고양이 사진"
-                             width="360"
-                             style="display:block;width:100%;max-width:768px;height:auto;border:none;"/>
-                    </td>
-                </tr>
-
-                <!-- 하단 흰 여백 + 날짜 -->
-                <tr>
-                    <td align="center" style="padding:18px 16px 22px;">
-                        <p style="margin:0;font-size:13px;color:#b0a89a;
-                                  font-family:'Courier New',Courier,monospace;
-                                  letter-spacing:0.08em;"
-                           th:text="${date}"></p>
-                    </td>
-                </tr>
-
-            </table>
-            <!-- /즉석 사진 카드 -->
+                        <!-- 즉석 사진 카드 3 (텍스트 없음) -->
+                        <td style="padding:0 12px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                                   style="width:400px;background-color:#ffffff;
+                                          box-shadow:0 4px 6px rgba(0,0,0,0.08),0 12px 32px rgba(0,0,0,0.10),2px 2px 0 #e8e4de;
+                                          border-radius:2px;">
+                                <tr>
+                                    <td style="padding:16px 16px 0;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0 16px;">
+                                        <img src="cid:catImageNone"
+                                             alt="오늘의 고양이 사진 (텍스트 없음)"
+                                             width="368"
+                                             style="display:block;width:100%;height:auto;border:none;"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="padding:18px 16px 22px;">
+                                        <p style="margin:0;font-size:15px;color:#b0a89a;
+                                                  font-family:'Courier New',Courier,monospace;
+                                                  letter-spacing:0.08em;"
+                                           th:text="${date}"></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /가로 스크롤 컨테이너 -->
 
             <!-- 구독 관리 링크 -->
             <table role="presentation" cellspacing="0" cellpadding="0" border="0"
                    style="width:360px;margin-top:20px;">
                 <tr>
                     <td align="center">
-                        <a th:href="${resubscribeUrl}"
-                           target="_blank"
-                           style="font-size:12px;color:#a09890;text-decoration:none;letter-spacing:0.03em;">
-                            수신 시간 변경
-                        </a>
                         <span style="font-size:12px;color:#c8c0b8;padding:0 8px;">·</span>
                         <a th:href="${unsubscribeUrl}"
                            target="_blank"
-                           style="font-size:12px;color:#a09890;text-decoration:none;letter-spacing:0.03em;">
+                           style="font-size:14px;color:#a09890;text-decoration:none;letter-spacing:0.03em;">
                             구독 취소
                         </a>
                         <span style="font-size:12px;color:#c8c0b8;padding:0 8px;">·</span>
                         <a href="mailto:dev.mail.meow@gmail.com"
-                           style="font-size:12px;color:#a09890;text-decoration:none;letter-spacing:0.03em;">
+                           style="font-size:14px;color:#a09890;text-decoration:none;letter-spacing:0.03em;">
                             묘한 아이디어 제보
                         </a>
                     </td>
