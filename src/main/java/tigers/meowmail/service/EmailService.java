@@ -3,7 +3,6 @@ package tigers.meowmail.service;
 import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.core.io.FileSystemResource;
@@ -35,7 +34,9 @@ public class EmailService {
 	private static final String SUBJECT_DAILY_CAT = "[매일묘일] 고양이 편지가 도착했어요 🐾";
 	private static final String EMAIL_SUBSCRIPTION_VERIFICATION = "email-subscription-verification";
 	private static final String EMAIL_DAILY_CAT = "email-daily-cat";
-	private static final String IMAGE_CONTENT_ID = "catImage";
+	private static final String IMAGE_CONTENT_ID_ENG = "catImageEng";
+	private static final String IMAGE_CONTENT_ID_KOR = "catImageKor";
+	private static final String IMAGE_CONTENT_ID_NONE = "catImageNone";
 
 	private final TemplateEngine templateEngine;
 	private final JavaMailSender mailSender;
@@ -60,13 +61,14 @@ public class EmailService {
 		ZonedDateTime nowKst = ZonedDateTime.now(zoneId);
 		String today = nowKst.toLocalDate().toString();  // "YYYY-MM-DD"
 
-		Path imagePath = imageService.findImagePath(today).orElseGet(() -> {
-			log.warn("No image found for today ({}). Fetching now.", today);
-			imageService.fetchAndSaveImage(today);
-			return imageService.findImagePath(today).orElse(null);
-		});
-		if (imagePath == null) {
-			log.warn("Image unavailable for today ({}). Skipping email dispatch.", today);
+		List<Path> imagePaths = imageService.findImagePaths(today);
+		if (imagePaths.isEmpty()) {
+			log.warn("No images found for today ({}). Fetching now.", today);
+			imageService.fetchAndSaveImages(today);
+			imagePaths = imageService.findImagePaths(today);
+		}
+		if (imagePaths.size() < 3) {
+			log.warn("Insufficient images for today ({}): found {} image(s). Skipping email dispatch.", today, imagePaths.size());
 			return;
 		}
 
@@ -78,7 +80,28 @@ public class EmailService {
 
 		log.info("Sending image email to {} subscriber(s)", targets.size());
 
-		FileSystemResource imageResource = new FileSystemResource(imagePath);
+		// 한국어, 영어, none 이미지 구분
+		Path engImagePath = imagePaths.stream()
+			.filter(path -> path.getFileName().toString().contains("-eng"))
+			.findFirst()
+			.orElse(null);
+		Path korImagePath = imagePaths.stream()
+			.filter(path -> path.getFileName().toString().contains("-kor"))
+			.findFirst()
+			.orElse(null);
+		Path noneImagePath = imagePaths.stream()
+			.filter(path -> path.getFileName().toString().contains("-none"))
+			.findFirst()
+			.orElse(null);
+
+		if (engImagePath == null || korImagePath == null || noneImagePath == null) {
+			log.warn("Missing language-specific images for today ({}). Skipping email dispatch.", today);
+			return;
+		}
+
+		FileSystemResource engImageResource = new FileSystemResource(engImagePath);
+		FileSystemResource korImageResource = new FileSystemResource(korImagePath);
+		FileSystemResource noneImageResource = new FileSystemResource(noneImagePath);
 
 		for (Subscription subscriber : targets) {
 			String token = jwtProvider.generateSubscriptionToken(subscriber.getEmail());
@@ -89,7 +112,7 @@ public class EmailService {
 			context.setVariable("unsubscribeUrl", appProperties.baseUrl() + "/unsubscribe?token=" + token);
 
 			String htmlContent = templateEngine.process(EMAIL_DAILY_CAT, context);
-			sendMailWithInlineImage(subscriber.getEmail(), SUBJECT_DAILY_CAT, htmlContent, imageResource);
+			sendMailWithInlineImages(subscriber.getEmail(), SUBJECT_DAILY_CAT, htmlContent, korImageResource, engImageResource, noneImageResource);
 		}
 	}
 
@@ -112,7 +135,8 @@ public class EmailService {
 		}
 	}
 
-	private void sendMailWithInlineImage(String email, String subject, String htmlContent, FileSystemResource imageResource) {
+	private void sendMailWithInlineImages(String email, String subject, String htmlContent,
+		FileSystemResource korImageResource, FileSystemResource engImageResource, FileSystemResource noneImageResource) {
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_RELATED, "UTF-8");
@@ -120,7 +144,9 @@ public class EmailService {
 			helper.setTo(email);
 			helper.setSubject(subject);
 			helper.setText(htmlContent, true);
-			helper.addInline(IMAGE_CONTENT_ID, imageResource, toMediaType(imageResource.getFilename()));
+			helper.addInline(IMAGE_CONTENT_ID_KOR, korImageResource, toMediaType(korImageResource.getFilename()));
+			helper.addInline(IMAGE_CONTENT_ID_ENG, engImageResource, toMediaType(engImageResource.getFilename()));
+			helper.addInline(IMAGE_CONTENT_ID_NONE, noneImageResource, toMediaType(noneImageResource.getFilename()));
 
 			mailSender.send(message);
 			log.info("Daily cat image mail sent to: {}", email);
