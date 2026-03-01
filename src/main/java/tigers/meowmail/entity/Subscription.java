@@ -28,9 +28,6 @@ public class Subscription {
 	@Column(nullable = false, length = 320)
 	private String email; // lower-case normalized
 
-	@Column(nullable = false, length = 5)
-	private String time; // HH:mm format
-
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 32)
 	private SubscriptionStatus status;
@@ -43,8 +40,7 @@ public class Subscription {
 	@Column(nullable = false)
 	private Instant updatedAt;
 
-	public void markActive(String time, Instant activeAt) {
-		this.time = time;
+	public void markActive(Instant activeAt) {
 		this.status = SubscriptionStatus.ACTIVE;
 		this.startedAt = activeAt;
 		this.updatedAt = activeAt;
@@ -58,11 +54,6 @@ public class Subscription {
 	public void markVerified(Instant verifiedAt) {
 		this.status = SubscriptionStatus.VERIFIED;
 		this.updatedAt = verifiedAt;
-	}
-
-	public void updateTime(String time, Instant updatedAt) {
-		this.time = time;
-		this.updatedAt = updatedAt;
 	}
 
 }

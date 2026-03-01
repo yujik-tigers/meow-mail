@@ -29,6 +29,8 @@ import tigers.meowmail.util.JwtProvider;
 @Slf4j
 public class EmailService {
 
+	// 구글 개인 계정 기준, 하루 전송 가능한 수신자 수: 100
+
 	private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 	private static final String SUBJECT_SUBSCRIPTION_VERIFICATION = "[매일묘일] 구독 이메일 인증";
@@ -53,11 +55,10 @@ public class EmailService {
 		sendMail(email, SUBJECT_SUBSCRIPTION_VERIFICATION, EMAIL_SUBSCRIPTION_VERIFICATION, context);
 	}
 
-	// 매 시 00분, 30분마다 해당 시각을 구독 시간으로 설정한 ACTIVE 구독자에게 발송
-	@Scheduled(cron = "0 0,30,40 * * * *", zone = "Asia/Seoul")
+	// 정해진 시간에 ACTIVE 구독자에게 메일 발송
+	@Scheduled(cron = "0 0 8 * * *", zone = "Asia/Seoul")
 	public void sendImageEmail() {
 		ZonedDateTime nowKst = ZonedDateTime.now(KST);
-		String currentTime = nowKst.format(TIME_FORMATTER); // "HH:mm"
 		String today = nowKst.toLocalDate().toString();  // "YYYY-MM-DD"
 
 		Path imagePath = imageService.findImagePath(today).orElseGet(() -> {
@@ -70,13 +71,13 @@ public class EmailService {
 			return;
 		}
 
-		List<Subscription> targets = subscriptionRepository.findByStatusAndTime(SubscriptionStatus.ACTIVE, currentTime);
+		List<Subscription> targets = subscriptionRepository.findByStatus(SubscriptionStatus.ACTIVE);
 		if (targets.isEmpty()) {
-			log.info("No active subscribers for time {}", currentTime);
+			log.info("No active subscribers");
 			return;
 		}
 
-		log.info("Sending image email to {} subscriber(s) at {}", targets.size(), currentTime);
+		log.info("Sending image email to {} subscriber(s)", targets.size());
 
 		FileSystemResource imageResource = new FileSystemResource(imagePath);
 

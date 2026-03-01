@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import tigers.meowmail.config.properties.SubscriptionProperties;
 import tigers.meowmail.controller.dto.MessageResponse;
 import tigers.meowmail.controller.dto.SubscriptionRequest;
 import tigers.meowmail.controller.dto.VerificationResponse;
@@ -42,18 +43,20 @@ public class SubscriptionService {
 	private final EmailService emailService;
 	private final EmitterRepository emitterRepository;
 	private final SubscriptionRepository subscriptionRepo;
+	private final SubscriptionProperties subscriptionProperties;
 
 	public MessageResponse sendVerificationEmail(SubscriptionRequest request) {
-		Subscription subscription = findOrCreateSubscription(request.email(), request.time());
+		Subscription subscription = findOrCreateSubscription(request.email());
 		String token = jwtProvider.generateVerificationToken(subscription.getEmail());
 		emailService.sendVerificationEmail(request.email(), token);
 		return new MessageResponse("A verification email has been sent.");
 	}
 
 	// TODO: Email Crypto
-	private Subscription findOrCreateSubscription(String email, String time) {
+	private Subscription findOrCreateSubscription(String email) {
 		Instant now = Instant.now(clock);
 		String normalizedEmail = email.toLowerCase();
+		String defaultTime = subscriptionProperties.defaultTime();
 		Optional<Subscription> subscriptionOpt = subscriptionRepo.findByEmail(normalizedEmail);
 
 		if (subscriptionOpt.isPresent()) {
@@ -62,13 +65,11 @@ public class SubscriptionService {
 				throw new IllegalStateException("이미 구독 중인 이메일이에요");
 			}
 
-			subscription.updateTime(time, now);
 			return subscriptionRepo.save(subscription);
 		}
 
 		Subscription subscription = Subscription.builder()
 			.email(normalizedEmail)
-			.time(time)
 			.status(SubscriptionStatus.PENDING)
 			.createdAt(now)
 			.updatedAt(now)
@@ -142,25 +143,10 @@ public class SubscriptionService {
 			throw new IllegalStateException("Email verification is required before subscribing.");
 		}
 
-		subscription.markActive(request.time(), Instant.now(clock));
+		subscription.markActive(Instant.now(clock));
 		subscriptionRepo.save(subscription);
 
 		return new MessageResponse("Your email has been successfully subscribed.");
-	}
-
-	public String getSubscriptionTime(String email) {
-		return subscriptionRepo.findByEmail(email.toLowerCase())
-			.map(Subscription::getTime)
-			.orElseThrow(() -> new IllegalStateException("Subscription not found"));
-	}
-
-	public MessageResponse resubscribe(SubscriptionRequest request) {
-		Subscription subscription = subscriptionRepo.findByEmail(request.email())
-			.orElseThrow(() -> new IllegalStateException("Subscription not found"));
-
-		subscription.updateTime(request.time(), Instant.now(clock));
-
-		return new MessageResponse("Resubscribed to " + subscription.getEmail());
 	}
 
 	public UnsubscriptionResult unsubscribe(String token) {

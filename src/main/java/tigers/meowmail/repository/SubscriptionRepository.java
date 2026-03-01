@@ -12,6 +12,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
 	Optional<Subscription> findByEmail(String email);
 
-	List<Subscription> findByStatusAndTime(SubscriptionStatus status, String time);
+	List<Subscription> findByStatus(SubscriptionStatus status);
 
 }

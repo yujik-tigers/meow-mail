@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import tigers.meowmail.config.properties.SubscriptionProperties;
 import tigers.meowmail.controller.dto.MessageResponse;
 import tigers.meowmail.controller.dto.SubscriptionRequest;
 import tigers.meowmail.service.SubscriptionService;
@@ -29,6 +29,7 @@ import tigers.meowmail.util.JwtProvider;
 public class SubscriptionController {
 
 	private final JwtProvider jwtProvider;
+	private final SubscriptionProperties subscriptionProperties;
 	private final SubscriptionService subscriptionService;
 
 	private static final String VIEW_SUBSCRIBE = "view-subscribe";
@@ -48,7 +49,7 @@ public class SubscriptionController {
 		String email = jwtProvider.getEmailFrom(token);
 		model.addAttribute("email", email);
 		model.addAttribute("token", token);
-		model.addAttribute("currentTime", subscriptionService.getSubscriptionTime(email));
+		model.addAttribute("currentTime", subscriptionProperties.defaultTime());
 		return VIEW_RESUBSCRIBE;
 	}
 
@@ -101,13 +102,6 @@ public class SubscriptionController {
 	public ResponseEntity<MessageResponse> subscribe(@Valid @RequestBody SubscriptionRequest request) {
 		MessageResponse response = subscriptionService.subscribe(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	}
-
-	@ResponseBody
-	@PutMapping("/api/subscriptions")
-	public ResponseEntity<MessageResponse> resubscribe(@Valid @RequestBody SubscriptionRequest request) {
-		MessageResponse response = subscriptionService.resubscribe(request);
-		return ResponseEntity.ok(response);
 	}
 
 }
