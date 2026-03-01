@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import tigers.meowmail.config.properties.AppProperties;
 import tigers.meowmail.config.properties.ImageProperties;
 
 @Service
@@ -23,17 +24,16 @@ import tigers.meowmail.config.properties.ImageProperties;
 @Slf4j
 public class ImageService {
 
-	private static final ZoneId KST = ZoneId.of("Asia/Seoul");
-
 	private final WebClient imageWebClient;
 	private final ImageProperties imageProperties;
+	private final AppProperties appProperties;
 
 	private record ImageData(byte[] bytes, String extension) {
 
 	}
 
-	// 매일 22:00 KST에 다음 날 사진을 미리 받아 둠
-	@Scheduled(cron = "0 0 22 * * *", zone = "Asia/Seoul")
+	// 매일 6:00에 당일 필요한 사진을 미리 받아 둠
+	@Scheduled(cron = "0 0 6 * * *", zone = "${app.timezone}")
 	public void requestImageOfNextDay() {
 		LocalDate tomorrow = LocalDate.now(KST).plusDays(1);
 		fetchAndSaveImage(tomorrow.toString());

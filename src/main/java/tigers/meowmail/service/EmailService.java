@@ -31,8 +31,6 @@ public class EmailService {
 
 	// 구글 개인 계정 기준, 하루 전송 가능한 수신자 수: 100
 
-	private static final ZoneId KST = ZoneId.of("Asia/Seoul");
-	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 	private static final String SUBJECT_SUBSCRIPTION_VERIFICATION = "[매일묘일] 구독 이메일 인증";
 	private static final String SUBJECT_DAILY_CAT = "[매일묘일] 고양이 편지가 도착했어요 🐾";
 	private static final String EMAIL_SUBSCRIPTION_VERIFICATION = "email-subscription-verification";
@@ -56,9 +54,10 @@ public class EmailService {
 	}
 
 	// 정해진 시간에 ACTIVE 구독자에게 메일 발송
-	@Scheduled(cron = "0 0 8 * * *", zone = "Asia/Seoul")
+	@Scheduled(cron = "0 0 8 * * *", zone = "${app.timezone}")
 	public void sendImageEmail() {
-		ZonedDateTime nowKst = ZonedDateTime.now(KST);
+		ZoneId zoneId = ZoneId.of(appProperties.timezone());
+		ZonedDateTime nowKst = ZonedDateTime.now(zoneId);
 		String today = nowKst.toLocalDate().toString();  // "YYYY-MM-DD"
 
 		Path imagePath = imageService.findImagePath(today).orElseGet(() -> {
