@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import tigers.meowmail.config.properties.SubscriptionProperties;
 import tigers.meowmail.controller.dto.MessageResponse;
 import tigers.meowmail.controller.dto.SubscriptionRequest;
 import tigers.meowmail.controller.dto.VerificationResponse;
@@ -43,7 +42,6 @@ public class SubscriptionService {
 	private final EmailService emailService;
 	private final EmitterRepository emitterRepository;
 	private final SubscriptionRepository subscriptionRepo;
-	private final SubscriptionProperties subscriptionProperties;
 
 	public MessageResponse sendVerificationEmail(SubscriptionRequest request) {
 		Subscription subscription = findOrCreateSubscription(request.email());
@@ -56,7 +54,6 @@ public class SubscriptionService {
 	private Subscription findOrCreateSubscription(String email) {
 		Instant now = Instant.now(clock);
 		String normalizedEmail = email.toLowerCase();
-		String defaultTime = subscriptionProperties.defaultTime();
 		Optional<Subscription> subscriptionOpt = subscriptionRepo.findByEmail(normalizedEmail);
 
 		if (subscriptionOpt.isPresent()) {

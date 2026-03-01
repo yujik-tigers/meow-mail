@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import tigers.meowmail.config.properties.AppProperties;
-import tigers.meowmail.config.properties.SubscriptionProperties;
+import tigers.meowmail.config.properties.ScheduledProperties;
 
 @Component
 @RequiredArgsConstructor
@@ -15,7 +15,7 @@ import tigers.meowmail.config.properties.SubscriptionProperties;
 public class StartupInfoRunner implements ApplicationRunner {
 
 	private final AppProperties appProperties;
-	private final SubscriptionProperties subscriptionProperties;
+	private final ScheduledProperties scheduledProperties;
 
 	@Override
 	public void run(ApplicationArguments args) {
@@ -27,7 +27,8 @@ public class StartupInfoRunner implements ApplicationRunner {
 		log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 		log.info("📮  Application Version  : {}", version);
 		log.info("🌍  Timezone             : {}", appProperties.timezone());
-		log.info("⏰  Default Send Time    : {}", subscriptionProperties.defaultTime());
+		log.info("📧  Email Schedule       : {}", scheduledProperties.sendEmailCron());
+		log.info("🖼️  Image Fetch Schedule : {}", scheduledProperties.fetchImageCron());
 		log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 	}
 	

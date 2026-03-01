@@ -17,7 +17,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import tigers.meowmail.config.properties.SubscriptionProperties;
 import tigers.meowmail.controller.dto.MessageResponse;
 import tigers.meowmail.controller.dto.SubscriptionRequest;
 import tigers.meowmail.service.SubscriptionService;
@@ -29,7 +28,6 @@ import tigers.meowmail.util.JwtProvider;
 public class SubscriptionController {
 
 	private final JwtProvider jwtProvider;
-	private final SubscriptionProperties subscriptionProperties;
 	private final SubscriptionService subscriptionService;
 
 	private static final String VIEW_SUBSCRIBE = "view-subscribe";
@@ -49,7 +47,6 @@ public class SubscriptionController {
 		String email = jwtProvider.getEmailFrom(token);
 		model.addAttribute("email", email);
 		model.addAttribute("token", token);
-		model.addAttribute("currentTime", subscriptionProperties.defaultTime());
 		return VIEW_RESUBSCRIBE;
 	}
 
