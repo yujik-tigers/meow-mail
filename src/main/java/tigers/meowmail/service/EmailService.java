@@ -108,7 +108,6 @@ public class EmailService {
 
 			Context context = new Context();
 			context.setVariable("date", today);
-			context.setVariable("resubscribeUrl", appProperties.baseUrl() + "/resubscribe?token=" + token);
 			context.setVariable("unsubscribeUrl", appProperties.baseUrl() + "/unsubscribe?token=" + token);
 
 			String htmlContent = templateEngine.process(EMAIL_DAILY_CAT, context);

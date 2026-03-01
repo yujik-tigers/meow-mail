@@ -31,7 +31,6 @@ public class SubscriptionController {
 	private final SubscriptionService subscriptionService;
 
 	private static final String VIEW_SUBSCRIBE = "view-subscribe";
-	private static final String VIEW_RESUBSCRIBE = "view-resubscribe";
 	private static final String VIEW_UNSUBSCRIBE = "view-unsubscribe";
 	private static final String VIEW_UNSUBSCRIBE_CONFIRM = "view-unsubscribe-confirm";
 	private static final String VIEW_VERIFY_RESULT = "view-verify-result";
@@ -39,15 +38,6 @@ public class SubscriptionController {
 	@GetMapping("/subscribe")
 	public String showSubscriptionForm() {
 		return VIEW_SUBSCRIBE;
-	}
-
-	@GetMapping("/resubscribe")
-	public String showResubscriptionForm(@RequestParam String token, Model model) {
-		jwtProvider.validateToken(token, SUBSCRIPTION);
-		String email = jwtProvider.getEmailFrom(token);
-		model.addAttribute("email", email);
-		model.addAttribute("token", token);
-		return VIEW_RESUBSCRIBE;
 	}
 
 	@GetMapping("/unsubscribe")
