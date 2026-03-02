@@ -75,8 +75,20 @@ public class SubscriptionService {
 	}
 
 	public SseEmitter openEmitter(String email) {
-		SseEmitter emitter = new SseEmitter(600_000L); // 10m
 		String normalizedEmail = email.toLowerCase();
+
+		// 기존 emitter가 있다면 먼저 정리
+		emitterRepository.findByEmail(normalizedEmail).ifPresent(oldEmitter -> {
+			try {
+				oldEmitter.complete();
+			} catch (Exception e) {
+				// 이미 완료된 emitter인 경우 예외 무시
+				log.debug("Old emitter already completed for email: {}", normalizedEmail);
+			}
+			emitterRepository.delete(normalizedEmail);
+		});
+
+		SseEmitter emitter = new SseEmitter(600_000L); // 10m
 
 		emitter.onCompletion(() -> emitterRepository.delete(normalizedEmail));
 		emitter.onTimeout(() -> emitterRepository.delete(normalizedEmail));
@@ -126,7 +138,12 @@ public class SubscriptionService {
 					.name(name)
 					.data(new VerificationResponse(status, message)));
 				emitter.complete();
+			} catch (IllegalStateException e) {
+				// emitter가 이미 완료된 경우
+				log.debug("Emitter already completed for email: {}", email);
+				emitterRepository.delete(email);
 			} catch (IOException e) {
+				log.error("Failed to send SSE event to email: {}", email, e);
 				emitter.completeWithError(e);
 			}
 		});

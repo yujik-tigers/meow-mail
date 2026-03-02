@@ -22,7 +22,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Write application-prod.yaml from secret
-        run: echo "${{ secrets.APPLICATION_PROD_YAML }}" > src/main/resources/application-prod.yaml
+        run: |
+          cat << 'EOF' > src/main/resources/application-prod.yaml
+          ${{ secrets.APPLICATION_PROD_YAML }}
+          EOF
 
       - name: Build with Gradle (skip tests)
         run: ./gradlew bootJar -x test --no-daemon

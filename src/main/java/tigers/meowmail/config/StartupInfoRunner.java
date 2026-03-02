@@ -24,12 +24,12 @@ public class StartupInfoRunner implements ApplicationRunner {
 			version = "dev";
 		}
 
-		log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-		log.info("📮  Application Version  : {}", version);
-		log.info("🌍  Timezone             : {}", appProperties.timezone());
-		log.info("📧  Email Schedule       : {}", scheduledProperties.sendEmailCron());
-		log.info("🖼️  Image Fetch Schedule : {}", scheduledProperties.fetchImageCron());
-		log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+		log.info("--------------------------------------------------------");
+		log.info("📮 Application Version  : {}", version);
+		log.info("🌍 Timezone             : {}", appProperties.timezone());
+		log.info("📧 Email Schedule       : {}", scheduledProperties.sendEmailCron());
+		log.info("🖼️ Image Fetch Schedule : {}", scheduledProperties.fetchImageCron());
+		log.info("--------------------------------------------------------");
 	}
-	
+
 }

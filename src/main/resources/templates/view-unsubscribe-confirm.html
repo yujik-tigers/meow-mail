@@ -74,42 +74,34 @@
 
 <body class="min-h-screen flex items-center justify-center p-6 transition-colors duration-300">
 
-<!-- 다크모드 토글 -->
-<button class="fixed top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-300 hover:scale-110 transition-transform"
-        onclick="document.documentElement.classList.toggle('dark')">
-    <span class="material-symbols-outlined text-xl">dark_mode</span>
-</button>
-
 <main class="max-w-md w-full">
 
     <!-- ── STEP 1: 확인 ── -->
     <div id="step-confirm" class="step active">
         <div class="form-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
             <div class="p-10 text-center">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 font-bold text-sm"
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 font-semibold text-xs"
                      style="background:rgb(255,249,229);color:#ffb545;">
-                    <span class="material-symbols-outlined text-lg">unsubscribe</span>
+                    <span class="material-symbols-outlined text-sm">unsubscribe</span>
                     구독 취소
                 </div>
 
-                <h1 class="text-2xl font-black text-gray-900 dark:text-white mb-3 leading-tight">
+                <h1 class="text-xl font-semibold text-gray-900 dark:text-white mb-3 leading-tight">
                     정말 구독을 취소하시겠어요?
                 </h1>
-                <p class="text-gray-500 dark:text-gray-400 text-sm mb-8 leading-relaxed">
-                    취소하시면 더 이상 고양이 편지를 받아볼 수 없어요.<br/>
-                    언제든 다시 구독하실 수 있습니다.
+                <p class="text-gray-500 dark:text-gray-500 text-sm mb-8 leading-relaxed">
+                    언제든 다시 구독하실 수 있습니다
                 </p>
 
                 <div class="flex flex-col gap-3">
                     <button id="confirm-btn" type="button"
-                            class="w-full py-3.5 rounded-2xl font-bold text-base flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition"
-                            style="background-color:#fff9e5;color:#ffb545;">
-                        <span class="material-symbols-outlined text-xl">do_not_disturb_on</span>
+                            class="w-full py-3 rounded-2xl font-semibold text-sm text-base flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition"
+                            style="background-color:#ffb545;color:#fff9e5;">
                         네, 구독을 취소할게요
                     </button>
                     <a href="/subscribe"
-                       class="w-full py-3.5 rounded-2xl bg-secondary text-white font-bold text-base flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition">
-                        <span class="material-symbols-outlined text-xl">pets</span>
+                       class="w-full py-3 rounded-2xl bg-text-white text-sm font-semibold text-base flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition"
+                       style="background-color:#fff9d3;color:#ffaf34;">
                         아니요, 계속 받을게요
                     </a>
                 </div>
@@ -122,12 +114,11 @@
     <div id="step-done" class="step">
         <div id="done-card" class="form-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
             <div class="p-10 text-center">
-                <div id="done-icon" class="text-6xl mb-6 floating">😿</div>
-                <h2 id="done-title" class="text-3xl font-black text-gray-900 dark:text-white mb-3"></h2>
-                <p id="done-message" class="text-gray-500 dark:text-gray-400 mb-8 leading-relaxed"></p>
+                <div id="done-icon" class="text-4xl mb-6 floating">😿</div>
+                <h2 id="done-title" class="text-xl font-semibold text-gray-900 dark:text-white mb-3"></h2>
+                <p id="done-message" class="text-base text-gray-500 dark:text-gray-400 mb-8 leading-relaxed whitespace-pre-line"></p>
                 <div class="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-1">
-                    <p class="text-sm text-gray-400 dark:text-gray-500">이 창은 닫으셔도 좋습니다</p>
-                    <p class="text-sm text-gray-400 dark:text-gray-500 italic">Feel free to close this tab</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">이 창은 닫아도 돼요</p>
                 </div>
             </div>
         </div>
@@ -160,14 +151,14 @@
             });
 
             if (res.ok) {
-                showDone(true, '구독이 취소되었습니다.',
-                    '더 이상 메일이 발송되지 않습니다.\n언제든 다시 돌아와 주세요! 🐾');
+                showDone(true, '구독이 취소되었습니다',
+                    '더 이상 메일이 발송되지 않습니다 \n언제든 다시 돌아와 주세요! 🐾');
             } else {
-                showDone(false, '오류가 발생했습니다.',
-                    '구독 취소 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.');
+                showDone(false, '오류가 발생했습니다',
+                    '구독 취소 중 문제가 발생했어요 잠시 후 다시 시도해 주세요');
             }
         } catch {
-            showDone(false, '네트워크 오류', '잠시 후 다시 시도해 주세요.');
+            showDone(false, '네트워크 오류', '잠시 후 다시 시도해 주세요');
         }
     });
 </script>

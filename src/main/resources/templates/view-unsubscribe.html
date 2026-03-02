@@ -79,12 +79,6 @@
 <body class="min-h-screen flex items-center justify-center p-6 transition-colors duration-300"
       th:classappend="'type-' + ${result.type}">
 
-<!-- 다크모드 토글 -->
-<button class="fixed top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-300 hover:scale-110 transition-transform"
-        onclick="document.documentElement.classList.toggle('dark')">
-    <span class="material-symbols-outlined text-xl">dark_mode</span>
-</button>
-
 <main class="max-w-md w-full">
     <div class="result-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
         <div class="p-10 text-center">

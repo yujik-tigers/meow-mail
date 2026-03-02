@@ -22,6 +22,7 @@ let timerInterval = null;
 let activeEvtSource = null;
 let pollInterval = null;
 let currentEmail = null;
+let verifiedEmail = null;
 
 // ── 버튼 활성화 ──
 function updateSendBtnState() {
@@ -51,6 +52,7 @@ function startTimer() {
                 hideAllEmailStatus();
                 show('verify-expired');
                 document.getElementById('email').classList.remove('input-verified');
+                document.getElementById('email').readOnly = false;
                 updateSendBtnState();
                 if (activeEvtSource) {
                     activeEvtSource.close();
@@ -66,6 +68,7 @@ function startTimer() {
 function onVerificationSuccess() {
     if (verified) return;
     verified = true;
+    verifiedEmail = currentEmail;
     clearInterval(timerInterval);
     stopPolling();
     if (activeEvtSource) {
@@ -73,10 +76,14 @@ function onVerificationSuccess() {
         activeEvtSource = null;
     }
     hideAllEmailStatus();
+    // 인증된 이메일로 입력 필드 값 고정
+    document.getElementById('email').value = verifiedEmail;
     document.getElementById('email').classList.add('input-verified');
     document.getElementById('email').readOnly = true;
     show('verify-success');
+    hide('email-hint');
     document.getElementById('verify-btn-label').textContent = '인증완료';
+    document.getElementById('send-verify-btn').disabled = true;
     updateSubscribeBtnState();
 }
 
@@ -128,7 +135,8 @@ function openSse(email) {
             hideAllEmailStatus();
             show('verify-fail');
             document.getElementById('verify-fail-msg').textContent =
-                data.message || '이메일 인증에 실패했어요. 다시 시도해 주세요.';
+                data.message || '이메일 인증에 실패했어요 다시 시도해 주세요';
+            document.getElementById('email').readOnly = false;
             updateSendBtnState();
         }
     });
@@ -145,6 +153,25 @@ function openSse(email) {
 function setVerifyBtnLoading(loading) {
     document.getElementById('verify-btn-spinner').classList.toggle('hidden', !loading);
     document.getElementById('verify-btn-label').textContent = loading ? '전송 중' : '인증하기';
+}
+
+// ── 인증 취소 ──
+function cancelVerification() {
+    verified = false;
+    verifiedEmail = null;
+    currentEmail = null;
+    clearInterval(timerInterval);
+    if (activeEvtSource) {
+        activeEvtSource.close();
+        activeEvtSource = null;
+    }
+    stopPolling();
+    hideAllEmailStatus();
+    document.getElementById('email').classList.remove('input-error', 'input-verified');
+    document.getElementById('email').readOnly = false;
+    document.getElementById('send-verify-btn').disabled = false;
+    document.getElementById('verify-btn-label').textContent = '인증하기';
+    updateSendBtnState();
 }
 
 // ── 인증 메일 발송 ──
@@ -179,12 +206,14 @@ document.getElementById('send-verify-btn').addEventListener('click', async funct
             document.getElementById('email-error-msg').textContent =
                 body.message || '요청 중 오류가 발생했어요 잠시 후 다시 시도해 주세요';
             document.getElementById('email').classList.add('input-error');
+            document.getElementById('email').readOnly = false;
             setVerifyBtnLoading(false);
             btn.disabled = false;
             return;
         }
 
         document.getElementById('email').classList.remove('input-error');
+        document.getElementById('email').readOnly = true;  // 인증 대기 중 이메일 수정 불가
         setVerifyBtnLoading(false);
         show('verify-pending');
         startTimer();
@@ -197,6 +226,7 @@ document.getElementById('send-verify-btn').addEventListener('click', async funct
         document.getElementById('email-error-msg').textContent =
             '네트워크 오류가 발생했어요 잠시 후 다시 시도해 주세요';
         document.getElementById('email').classList.add('input-error');
+        document.getElementById('email').readOnly = false;
         setVerifyBtnLoading(false);
         btn.disabled = false;
     }
@@ -204,21 +234,25 @@ document.getElementById('send-verify-btn').addEventListener('click', async funct
 
 // ── 구독하기 ──
 document.getElementById('subscribe-btn').addEventListener('click', async function () {
-    const email = document.getElementById('email').value.trim();
-    const btn = this;
+    // 인증된 이메일로만 구독 요청
+    if (!verifiedEmail) {
+        showDone(false, '구독 실패', '이메일 인증을 먼저 완료해 주세요');
+        return;
+    }
 
+    const btn = this;
     btn.disabled = true;
 
     try {
         const res = await fetch('/api/subscriptions', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email}),
+            body: JSON.stringify({email: verifiedEmail}),
         });
 
         if (res.ok) {
-            showDone(true, '구독 완료!',
-                `${email}으로 매일 귀여운 고양이 편지를 보내드릴게요 🐾`);
+            showDone(true, '구독 완료',
+                `${verifiedEmail}으로\n매일 귀여운 고양이 편지를 보내드릴게요`);
         } else {
             const body = await res.json().catch(() => ({}));
             showDone(false, '구독 실패', body.message || '구독 중 오류가 발생했어요');
@@ -243,6 +277,17 @@ function showDone(success, title, message) {
 // ── 이벤트 리스너 ──
 document.getElementById('email').addEventListener('input', function () {
     if (verified) return;
+    // 인증 대기 중 이메일 수정 시 진행 중인 인증 프로세스 중단
+    if (currentEmail !== null && this.value.trim() !== currentEmail) {
+        clearInterval(timerInterval);
+        if (activeEvtSource) {
+            activeEvtSource.close();
+            activeEvtSource = null;
+        }
+        stopPolling();
+        currentEmail = null;
+        document.getElementById('send-verify-btn').disabled = false;
+    }
     hideAllEmailStatus();
     this.classList.remove('input-error', 'input-verified');
     updateSendBtnState();
@@ -256,4 +301,8 @@ document.getElementById('email').addEventListener('blur', function () {
         document.getElementById('email-error-msg').textContent = '이메일 형식을 다시 확인해 주세요';
         this.classList.add('input-error');
     }
+});
+
+document.getElementById('cancel-verify-btn').addEventListener('click', function () {
+    cancelVerification();
 });

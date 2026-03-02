@@ -37,12 +37,6 @@
 
 <body class="min-h-screen flex items-center justify-center p-6 transition-colors duration-300">
 
-<!-- 다크모드 토글 -->
-<button class="fixed top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-300 hover:scale-110 transition-transform"
-        onclick="document.documentElement.classList.toggle('dark')">
-    <span class="material-symbols-outlined text-xl">dark_mode</span>
-</button>
-
 <main class="max-w-lg w-full">
 
     <!-- ── STEP 1: 구독 폼 ── -->
@@ -60,7 +54,7 @@
                         고양이 편지 배송 서비스
                     </h1>
                     <p class="text-gray-500 dark:text-gray-400 text-sm">
-                        매일 원하는 시간에 딱 한 장, 고양이 편지를 보내드려요
+                        매일 아침 8시에 고양이 편지를 보내드려요
                     </p>
                 </div>
 
@@ -73,15 +67,15 @@
                     <!-- 이메일 입력 + 인증하기 버튼 (가로 배치) -->
                     <div class="flex gap-2">
                         <div class="relative flex-1 min-w-0">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-xl pointer-events-none">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-base pointer-events-none">
                                 mail
                             </span>
                             <input id="email" name="email" type="email" autocomplete="email"
                                    placeholder="example@email.com"
-                                   class="w-full pl-10 pr-3 py-3 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary/40 focus:border-gray-100 transition"/>
+                                   class="w-full pl-10 pr-3 py-3 rounded-2xl border border-gray-100 text-sm dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary/40 focus:border-gray-100 transition"/>
                         </div>
                         <button id="send-verify-btn" type="button" disabled
-                                class="shrink-0 px-4 py-3 rounded-2xl bg-secondary text-white font-bold text-sm flex items-center gap-1.5 hover:brightness-105 active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
+                                class="shrink-0 px-4 py-3 rounded-2xl bg-secondary text-white font-semibold text-sm flex items-center gap-1.5 hover:brightness-105 active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
                             <svg id="verify-btn-spinner" class="hidden animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
@@ -104,21 +98,27 @@
                             <p class="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
                                 인증 메일을 보냈어요 메일함을 확인해 주세요
                             </p>
-                            <span id="timer"
-                                  class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
-                                30:00
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <span id="timer"
+                                      class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
+                                    30:00
+                                </span>
+                                <button id="cancel-verify-btn" type="button"
+                                        class="text-xs font-normal text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-2.5 py-0.5 rounded-full transition active:scale-95 flex items-center gap-1">
+                                    취소
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <!-- 타이머 만료 -->
                     <p id="verify-expired" class="hidden mt-1.5 text-xs text-red-500 flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm">timer_off</span>
-                        인증 유효 시간이 만료되었습니다 다시 요청해 주세요
+                        인증 유효 시간이 만료되었어요 다시 요청해 주세요
                     </p>
                     <!-- 인증 성공 -->
                     <p id="verify-success" class="hidden mt-1.5 text-xs text-secondary flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm">verified</span>
-                        이메일 인증이 완료되었습니다
+                        이메일 인증을 완료했어요
                     </p>
                     <!-- 인증 실패 -->
                     <p id="verify-fail" class="hidden mt-1.5 text-xs text-red-500 flex items-center gap-1">
@@ -133,8 +133,8 @@
 
                 <!-- 구독하기 버튼 -->
                 <button id="subscribe-btn" type="button" disabled
-                        class="w-full py-3.5 rounded-2xl bg-secondary text-white font-bold text-base flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed">
-                    <span class="material-symbols-outlined text-xl">pets</span>
+                        class="w-full py-3 rounded-2xl bg-secondary text-white font-semibold text-base flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    <span class="material-symbols-outlined text-base">pets</span>
                     구독하기
                 </button>
             </div>
@@ -159,9 +159,9 @@
     <div id="step-done" class="step">
         <div id="done-card" class="form-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
             <div class="p-10 text-center">
-                <div id="done-icon" class="text-3xl mb-6 floating">🐈</div>
-                <h2 id="done-title" class="text-2xl font-semibold text-gray-900 dark:text-white mb-3"></h2>
-                <p id="done-message" class="text-gray-500 dark:text-gray-400 mb-8 leading-relaxed"></p>
+                <div id="done-icon" class="text-4xl mb-6 floating">🐾</div>
+                <h2 id="done-title" class="text-xl font-semibold text-gray-800 dark:text-white mb-3"></h2>
+                <p id="done-message" class="text-l text-gray-500 dark:text-gray-400 mb-8 leading-relaxed whitespace-pre-line"></p>
                 <div class="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-1">
                     <p class="text-xs text-gray-400 dark:text-gray-500">이 창은 닫아도 돼요</p>
                 </div>
