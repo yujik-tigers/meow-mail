@@ -21,15 +21,15 @@ public class StartupInfoRunner implements ApplicationRunner {
 	public void run(ApplicationArguments args) {
 		String version = getClass().getPackage().getImplementationVersion();
 		if (version == null) {
-			version = "dev";
+			version = "unknown";
 		}
 
-		log.info("--------------------------------------------------------");
+		log.info("-----------------------------------------");
 		log.info("📮 Application Version  : {}", version);
 		log.info("🌍 Timezone             : {}", appProperties.timezone());
 		log.info("📧 Email Schedule       : {}", scheduledProperties.sendEmailCron());
 		log.info("🖼️ Image Fetch Schedule : {}", scheduledProperties.fetchImageCron());
-		log.info("--------------------------------------------------------");
+		log.info("-----------------------------------------");
 	}
 
 }
