@@ -48,6 +48,22 @@ public class ImageService {
 	}
 
 	private void fetchAndSaveImageForLanguage(String date, String language) {
+		// 이미 해당 언어의 이미지가 존재하는지 확인
+		Path storageDirectory = Paths.get(imageProperties.storagePath());
+		try {
+			if (Files.exists(storageDirectory)) {
+				boolean exists = Files.list(storageDirectory)
+					.anyMatch(path -> path.getFileName().toString().startsWith(date + "-" + language));
+
+				if (exists) {
+					log.info("Image already exists for {} ({}), skipping fetch", date, language);
+					return;
+				}
+			}
+		} catch (IOException e) {
+			log.warn("Failed to check existing images for {} ({}), proceeding with fetch", date, language, e);
+		}
+
 		log.info("Requesting {} image for {}", language, date);
 
 		ImageData imageData = imageWebClient.post()
@@ -79,7 +95,6 @@ public class ImageService {
 		log.info("Received {} image for {}: {} bytes ({} KB)", language, date, imageData.bytes().length, imageData.bytes().length / 1024);
 
 		try {
-			Path storageDirectory = Paths.get(imageProperties.storagePath());
 			Files.createDirectories(storageDirectory);
 
 			Path imagePath = storageDirectory.resolve(date + "-" + language + imageData.extension());
