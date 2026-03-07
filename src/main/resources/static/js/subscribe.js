@@ -72,7 +72,7 @@ function onVerificationSuccess() {
         activeEvtSource = null;
     }
     showDone(true, '구독 완료',
-        `${verifiedEmail}으로\n매일 아침 8시에 귀여운 고양이 편지를 보내드릴게요`);
+        `구독이 시작됐어요!\n${verifiedEmail}으로\n매일 아침 8시에 편지를 보내드릴게요`);
 }
 
 // ── 폴링 폴백 ──
@@ -140,7 +140,7 @@ function openSse(email) {
 // ── 인증 버튼 로딩 상태 ──
 function setVerifyBtnLoading(loading) {
     document.getElementById('verify-btn-spinner').classList.toggle('hidden', !loading);
-    document.getElementById('verify-btn-label').textContent = loading ? '전송 중' : '인증하기';
+    document.getElementById('verify-btn-label').textContent = loading ? '전송 중' : '이메일 인증 및 구독하기';
 }
 
 // ── 인증 취소 ──
@@ -158,7 +158,7 @@ function cancelVerification() {
     document.getElementById('email').classList.remove('input-error', 'input-verified');
     document.getElementById('email').readOnly = false;
     document.getElementById('send-verify-btn').disabled = false;
-    document.getElementById('verify-btn-label').textContent = '인증하기';
+    document.getElementById('verify-btn-label').textContent = '이메일 인증 및 구독하기';
     updateSendBtnState();
 }
 
@@ -221,14 +221,19 @@ document.getElementById('send-verify-btn').addEventListener('click', async funct
 
 // ── 완료 화면 ──
 function showDone(success, title, message) {
-    document.getElementById('done-icon').textContent = success ? '🐾' : '😿';
+    const iconEl = document.getElementById('done-icon');
+    if (success) {
+        iconEl.innerHTML = '<div class="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style="background:rgba(255,202,69,0.15);"><span class="material-symbols-outlined" style="font-size:2.8rem;color:#ffca45;font-variation-settings:\'FILL\' 1,\'wght\' 400,\'GRAD\' 0,\'opsz\' 48;">check_circle</span></div>';
+    } else {
+        iconEl.innerHTML = '<span style="font-size:2.5rem;">😿</span>';
+    }
     document.getElementById('done-title').textContent = title;
     document.getElementById('done-message').textContent = message;
     if (!success) {
         document.getElementById('done-card').style.boxShadow = '0 18px 35px rgba(248,113,113,0.22)';
     }
-    document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-    document.getElementById('step-done').classList.add('active');
+    document.getElementById('form-card-wrapper').classList.add('hidden');
+    document.getElementById('done-card').classList.remove('hidden');
 }
 
 // ── 이벤트 리스너 ──
