@@ -33,7 +33,7 @@ public class ImageService {
 	}
 
 	// 매일 설정된 시간에 당일 필요한 사진을 미리 받아 둠
-	@Scheduled(cron = "${scheduled.fetchImageCron}", zone = "${app.timezone}")
+	@Scheduled(cron = "${scheduled.fetch-image-cron}", zone = "${app.timezone}")
 	public void requestImageOfToday() {
 		ZoneId zoneId = ZoneId.of(appProperties.timezone());
 		LocalDate today = LocalDate.now(zoneId);

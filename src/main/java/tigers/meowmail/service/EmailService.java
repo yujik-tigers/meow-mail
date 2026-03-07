@@ -55,7 +55,7 @@ public class EmailService {
 	}
 
 	// 정해진 시간에 ACTIVE 구독자에게 메일 발송
-	@Scheduled(cron = "${scheduled.sendEmailCron}", zone = "${app.timezone}")
+	@Scheduled(cron = "${scheduled.send-email-cron}", zone = "${app.timezone}")
 	public void sendImageEmail() {
 		ZoneId zoneId = ZoneId.of(appProperties.timezone());
 		ZonedDateTime nowKst = ZonedDateTime.now(zoneId);
