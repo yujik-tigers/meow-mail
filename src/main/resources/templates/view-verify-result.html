@@ -94,7 +94,7 @@
             </div>
 
             <!-- 아이콘 -->
-            <div class="text-5xl mb-8 floating" th:text="${success} ? '🐈' : '😿'">🐈</div>
+            <div class="text-5xl mb-8 floating" th:text="${success} ? '✉️' : '😿'">✉️</div>
 
             <!-- 제목 -->
             <h1 class="text-xl font-semibold mb-4 leading-tight text-gray-800"
@@ -107,7 +107,6 @@
             <div th:if="${success}">
                 <p class="text-gray-600 dark:text-gray-400 mb-2 leading-relaxed">
                     이메일 인증에 성공했어요<br/>
-                    이제 구독 페이지에서 구독하기 버튼을 눌러 주세요
                 </p>
             </div>
             <div th:unless="${success}">

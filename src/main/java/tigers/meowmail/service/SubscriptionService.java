@@ -114,7 +114,9 @@ public class SubscriptionService {
 
 			email = jwtProvider.getEmailFrom(token);
 			subscriptionRepo.findByEmail(email).ifPresent(subscription -> {
-				subscription.markVerified(Instant.now(clock));
+				Instant now = Instant.now(clock);
+				subscription.markVerified(now);
+				subscription.markActive(now);
 				subscriptionRepo.save(subscription);
 			});
 			sendSseEvent(email, "verified", "success", "Your email has been successfully verified.");
