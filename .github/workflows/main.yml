@@ -78,6 +78,8 @@ jobs:
 
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/meow-mail:latest
             
+            docker image prune -f
+            
             mkdir -p /home/${{ secrets.EC2_USERNAME }}/images
             sudo chmod -R 777 /home/${{ secrets.EC2_USERNAME }}/images
             
