@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>매일묘일</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f5f0ea;font-family:'Apple SD Gothic Neo','Malgun Gothic','맑은 고딕',Arial,sans-serif;">
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+       style="background-color:#f5f0ea;">
+    <tr>
+        <td align="center" style="padding:40px 16px 36px;">
+
+            <!-- ── 전체 카드 (다이어리 페이지) ── -->
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                   style="width:560px;max-width:100%;background-color:#fffdf8;
+                          border:1px solid #e8e0d4;
+                          box-shadow:3px 4px 0 #e0d8cc, 6px 8px 0 #d8d0c4;
+                          border-radius:2px;margin:0 auto;">
+
+                <!-- ── 상단 스프링 구멍 장식 ── -->
+                <tr>
+                    <td style="padding:14px 28px 10px;border-bottom:2px solid #f0e8de;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                            <tr>
+                                <td>
+                                    <!-- 구멍들 -->
+                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;margin-right:10px;"></span>
+                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;margin-right:10px;"></span>
+                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;margin-right:10px;"></span>
+                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;margin-right:10px;"></span>
+                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;margin-right:10px;"></span>
+                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;"></span>
+                                </td>
+                                <td align="right">
+                                    <!-- 날짜 스탬프 -->
+                                    <span style="display:inline-block;background:#fff0f5;border:1.5px dashed #ffb3c8;
+                                                 color:#c07090;font-size:11px;font-family:'Courier New',Courier,monospace;
+                                                 padding:3px 12px;border-radius:20px;letter-spacing:0.08em;"
+                                          th:text="${date}">2025-01-01</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- ── 와시 테이프 + 헤더 ── -->
+                <tr>
+                    <td align="center" style="padding:20px 28px 6px;">
+                        <!-- 와시 테이프 조각 (핑크) -->
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                               style="margin-bottom:16px;">
+                            <tr>
+                                <td style="background-color:#ffd6e7;padding:5px 36px;border-radius:2px;opacity:0.9;">
+                                    <span style="font-size:13px;color:#e08aaa;letter-spacing:0.25em;">✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- 타이틀 -->
+                        <p style="margin:0 0 4px;font-size:11px;color:#c0a0b0;letter-spacing:0.22em;text-transform:uppercase;">
+                            today's meow
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- ── 구분선 (줄 노트 느낌) ── -->
+                <tr>
+                    <td style="padding:14px 28px 0;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                            <tr>
+                                <td style="border-top:1px solid #f0e4d8;font-size:0;">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td style="padding-top:5px;border-top:1px solid #f0e4d8;font-size:0;">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- ── 이미지 (폴라로이드 프레임) ── -->
+                <tr>
+                    <td align="center" style="padding:16px 36px 8px;">
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                               style="background:#ffffff;
+                                      padding:10px 10px 32px 10px;
+                                      box-shadow:2px 3px 0 #e8e0d4, 4px 6px 0 #d8d0c4;
+                                      border:1px solid #efe8e0;">
+                            <tr>
+                                <td>
+                                    <img th:src="'cid:' + ${memeImages[0]}"
+                                         alt="오늘의 고양이 짤"
+                                         width="468"
+                                         style="display:block;width:100%;max-width:468px;height:auto;border:none;"/>
+                                </td>
+                            </tr>
+                            <!-- 폴라로이드 하단 메모란 -->
+                            <tr>
+                                <td align="center" style="padding-top:10px;">
+                                    <span style="font-size:13px;color:#b8a8b0;font-family:'Courier New',Courier,monospace;
+                                                 letter-spacing:0.06em;">
+
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- ── 스티커 장식 영역 ── -->
+                <tr>
+                    <td style="padding:20px 36px 10px;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                            <tr>
+                                <!-- 왼쪽 스티커 뭉치 -->
+                                <td width="50%">
+                                </td>
+                                <!-- 오른쪽 메모 스티커 -->
+                                <td align="right">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- ── 하단 와시 테이프 (민트) ── -->
+                <tr>
+                    <td style="padding:10px 0 0;border-top:2px solid #f0e8de;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                            <tr>
+                                <td align="center"
+                                    style="background-color:#c8f0e4;padding:7px 0;font-size:11px;
+                                           color:#50a080;letter-spacing:0.2em;">
+                                    ✿ &nbsp; ✿ &nbsp; ✿ &nbsp; ✿ &nbsp; ✿ &nbsp; ✿ &nbsp; ✿ &nbsp; ✿
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+            </table>
+            <!-- ── /전체 카드 ── -->
+
+            <!-- ── 구독 관리 링크 ── -->
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                   style="width:360px;margin-top:20px;">
+                <tr>
+                    <td align="center">
+                        <a th:href="${unsubscribeUrl}"
+                           target="_blank"
+                           style="font-size:13px;color:#a09890;text-decoration:none;letter-spacing:0.03em;">
+                            구독 취소
+                        </a>
+                        <span style="font-size:12px;color:#c8c0b8;padding:0 8px;">·</span>
+                        <a href="mailto:dev.mail.meow@gmail.com"
+                           style="font-size:13px;color:#a09890;text-decoration:none;letter-spacing:0.03em;">
+                            묘한 아이디어 제보
+                        </a>
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

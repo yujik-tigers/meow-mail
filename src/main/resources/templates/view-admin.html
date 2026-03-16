@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>관리자 · 매일묘일</title>
+
+    <link rel="stylesheet" as="style" crossorigin
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"/>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#ffca45",
+                        secondary: "#a1c606",
+                        "pastel-bg": "#fffefc",
+                        "background-dark": "#081022",
+                    },
+                    fontFamily: {
+                        display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                        sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        body {
+            @apply bg-pastel-bg dark:bg-background-dark font-sans;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .date-btn {
+            @apply flex-shrink-0 flex flex-col items-center px-4 py-3 rounded-2xl
+                   border-2 border-gray-100 dark:border-gray-700
+                   bg-white dark:bg-gray-800
+                   text-gray-500 dark:text-gray-400
+                   hover:border-primary/50 hover:bg-amber-50/60 dark:hover:bg-gray-700
+                   disabled:opacity-50 disabled:cursor-not-allowed
+                   transition-all duration-150 cursor-pointer select-none;
+        }
+
+        .date-btn.active {
+            @apply border-primary bg-amber-50 dark:bg-gray-700 text-gray-800 dark:text-white;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        html.dark .skeleton {
+            background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        .type-tab {
+            @apply px-3 py-1.5 text-xs font-semibold
+                   text-gray-400 dark:text-gray-500
+                   bg-white dark:bg-gray-900
+                   transition-colors cursor-pointer;
+        }
+
+        .type-tab.active {
+            @apply text-gray-700 dark:text-gray-200
+                   bg-gray-100 dark:bg-gray-800;
+        }
+
+        .lang-tab {
+            @apply px-3 py-1.5 text-xs font-semibold
+                   text-gray-400 dark:text-gray-500
+                   bg-white dark:bg-gray-900
+                   transition-colors cursor-pointer;
+        }
+
+        .lang-tab.active {
+            @apply text-gray-700 dark:text-gray-200
+                   bg-gray-100 dark:bg-gray-800;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col p-5 transition-colors duration-300">
+
+<div class="w-full max-w-5xl mx-auto flex flex-col gap-5">
+
+    <!-- 헤더 -->
+    <div class="flex items-center justify-between py-1">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-700 text-base">pets</span>
+            <span class="font-bold text-gray-800 dark:text-white text-base tracking-tight">매일묘일</span>
+            <span class="text-xs font-semibold text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">관리자</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/subscribe"
+               class="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center gap-1 transition">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                구독 페이지
+            </a>
+            <form action="/admin/login/logout" method="post">
+                <button type="submit"
+                        class="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center gap-1 transition">
+                    <span class="material-symbols-outlined text-sm">logout</span>
+                    로그아웃
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 날짜 선택 -->
+    <div class="bg-white dark:bg-gray-900 rounded-3xl px-5 py-4 border border-gray-100 dark:border-gray-800">
+        <p class="text-sm font-semibold text-gray-800 dark:text-gray-500 mb-3 tracking-wide uppercase">날짜 선택</p>
+        <div class="flex gap-2 overflow-x-auto pb-1 -mb-1" id="date-buttons">
+            <button th:each="date, iter : ${dates}"
+                    th:data-date="${date}"
+                    th:classappend="${date == today} ? ' active' : ''"
+                    class="date-btn"
+                    th:onclick="'selectDate(this)'">
+                <span class="text-xs font-bold"
+                      th:text="${iter.index == 0} ? '오늘' :
+                               (${iter.index == 1} ? '내일' :
+                               (${iter.index == 2} ? '모레' : '+' + ${iter.index} + '일'))">
+                </span>
+                <span class="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5 font-mono"
+                      th:text="${#strings.substring(date, 5).replace('-', '/')}">
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 이미지 미리보기 -->
+    <div class="bg-white dark:bg-gray-900 rounded-3xl px-5 py-5 border border-gray-100 dark:border-gray-800">
+
+        <!-- 섹션 헤더 -->
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-bold text-gray-800 dark:text-white">이미지 미리보기</span>
+                <span id="preview-date-badge"
+                      class="text-xs font-mono text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full"
+                      th:text="${today}">
+                </span>
+                <span id="preview-type-badge"
+                      class="hidden text-xs font-semibold px-2 py-0.5 rounded-full">
+                </span>
+                <svg id="loading-spinner" class="hidden animate-spin w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
+            </div>
+
+            <!-- 액션 버튼 -->
+            <div class="flex items-center gap-2">
+                <!-- 타입 선택 (이미지 없을 때만 표시) -->
+                <div id="type-selector"
+                     class="hidden items-center rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <button id="type-btn-quotes" onclick="selectType('QUOTES')"
+                            class="type-tab active">
+                        명언
+                    </button>
+                    <button id="type-btn-meme" onclick="selectType('MEME')"
+                            class="type-tab border-l-2 border-gray-200 dark:border-gray-700">
+                        밈
+                    </button>
+                </div>
+                <!-- 언어 선택 (이미지 없을 때만 표시) -->
+                <div id="lang-selector"
+                     class="hidden items-center rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <button id="lang-btn-eng" onclick="toggleLang('eng')"
+                            class="lang-tab active">
+                        영어
+                    </button>
+                    <button id="lang-btn-kor" onclick="toggleLang('kor')"
+                            class="lang-tab border-l-2 border-gray-200 dark:border-gray-700 active">
+                        한국어
+                    </button>
+                    <button id="lang-btn-none" onclick="toggleLang('none')"
+                            class="lang-tab border-l-2 border-gray-200 dark:border-gray-700 active">
+                        없음
+                    </button>
+                </div>
+                <button id="delete-btn"
+                        onclick="deleteImages()"
+                        disabled
+                        class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold
+                               border-2 border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500
+                               disabled:opacity-40 disabled:cursor-not-allowed
+                               enabled:border-red-200 enabled:text-red-500
+                               enabled:hover:bg-red-50 enabled:dark:hover:bg-red-950/20
+                               transition-all active:scale-95">
+                    <svg id="delete-spinner" class="hidden animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                    </svg>
+                    <span class="material-symbols-outlined text-sm" id="delete-icon">delete</span>
+                    모두 삭제
+                </button>
+                <button id="request-btn"
+                        onclick="requestImages()"
+                        disabled
+                        class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold
+                               bg-primary text-gray-800
+                               disabled:opacity-40 disabled:cursor-not-allowed
+                               enabled:hover:brightness-105
+                               transition-all active:scale-95">
+                    <svg id="request-spinner" class="hidden animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                    </svg>
+                    <span class="material-symbols-outlined text-sm" id="request-icon">download</span>
+                    요청하기
+                </button>
+            </div>
+        </div>
+
+        <!-- 이미지 영역 (동적 렌더링) -->
+        <div id="image-area"></div>
+
+        <!-- 결과 메시지 -->
+        <div id="action-result" class="hidden mt-3 flex items-center gap-2 text-xs px-4 py-2.5 rounded-xl"></div>
+
+    </div>
+
+    <!-- 저작권 -->
+    <div class="py-3 text-center text-xs text-gray-400 dark:text-gray-600">
+        © 2026 Mail Meowil. All rights reserved.
+    </div>
+
+</div>
+
+<!-- 라이트박스 -->
+<div id="lightbox"
+     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+     onclick="closeLightbox(event)">
+    <button class="absolute top-4 right-4 flex items-center justify-center w-9 h-9 rounded-full
+                   bg-white/10 hover:bg-white/20 text-white transition-all"
+            onclick="closeLightbox()">
+        <span class="material-symbols-outlined text-xl">close</span>
+    </button>
+    <img id="lightbox-img"
+         src=""
+         alt=""
+         class="max-w-full max-h-[90vh] rounded-xl shadow-2xl object-contain
+                transition-transform duration-200 scale-95"
+         onclick="event.stopPropagation()"/>
+</div>
+
+<script th:inline="javascript">
+    const today = /*[[${today}]]*/ '';
+    let selectedDate = today;
+    let selectedType = 'QUOTES';
+    let selectedLangs = new Set(['eng', 'kor', 'none']);
+    let currentImageStatus = {};  // 이전/이후 비교용 상태 캐시
+
+    const LANG_LABELS = {
+        'quotes-eng': '영어',
+        'quotes-kor': '한국어',
+        'quotes-none': '텍스트 없음',
+        'memes-eng': '영어',
+        'memes-kor': '한국어',
+        'memes-none': '텍스트 없음',
+    };
+
+    // ─── 날짜 선택 ────────────────────────────────────────────────
+    function selectDate(btn) {
+        document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedDate = btn.dataset.date;
+        loadImages(selectedDate);
+    }
+
+    // ─── 이미지 상태 로드 ─────────────────────────────────────────
+    async function loadImages(date) {
+        setLoading(true);
+        setButtonsDisabled(true);
+        document.getElementById('preview-date-badge').textContent = date;
+        document.getElementById('action-result').classList.add('hidden');
+        renderLoadingSkeleton();
+
+        try {
+            const res = await fetch(`/admin/api/images?date=${date}`);
+            const data = await res.json();
+            currentImageStatus = data.images;
+            const existingLangs = Object.entries(data.images)
+                .filter(([, exists]) => exists)
+                .map(([lang]) => lang);
+
+            if (existingLangs.length > 0) {
+                renderTypeBadge(data.type);
+            } else {
+                document.getElementById('preview-type-badge').classList.add('hidden');
+            }
+            renderImageArea(date, data.images);
+            updateButtons(existingLangs);
+        } catch (e) {
+            console.error('Failed to load image status', e);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // ─── 타입 뱃지 ───────────────────────────────────────────────
+    function renderTypeBadge(type) {
+        const badge = document.getElementById('preview-type-badge');
+        if (type === 'QUOTES') {
+            badge.textContent = '명언';
+            badge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+        } else {
+            badge.textContent = '밈';
+            badge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400';
+        }
+        badge.classList.remove('hidden');
+    }
+
+    // ─── 로딩 스켈레톤 ───────────────────────────────────────────
+    function renderLoadingSkeleton() {
+        document.getElementById('image-area').innerHTML = `
+            <div class="grid grid-cols-3 gap-3">
+                ${[0, 1, 2].map(() => `
+                    <div class="rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                        <div class="px-3.5 pt-3 pb-2">
+                            <div class="skeleton h-3 w-16 rounded-full"></div>
+                        </div>
+                        <div class="mx-3 mb-3 rounded-xl overflow-hidden aspect-[4/5] skeleton"></div>
+                    </div>
+                `).join('')}
+            </div>`;
+    }
+
+    // ─── 이미지 영역 렌더링 ───────────────────────────────────────
+    function renderImageArea(date, allImages) {
+        const area = document.getElementById('image-area');
+
+        const existingLangs = Object.entries(allImages).filter(([, v]) => v).map(([k]) => k);
+
+        // 이미지 없음
+        if (existingLangs.length === 0) {
+            area.innerHTML = `
+                <div class="rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700
+                            py-12 flex flex-col items-center justify-center gap-3">
+                    <span class="material-symbols-outlined text-4xl text-gray-300 dark:text-gray-600"
+                          style="font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24">
+                        image_not_supported
+                    </span>
+                    <p class="text-sm font-semibold text-gray-400 dark:text-gray-500">이미지 없음</p>
+                    <p class="text-xs text-gray-300 dark:text-gray-600">요청하기를 눌러 이미지를 가져오세요</p>
+                </div>`;
+            return;
+        }
+
+        // 밈 day인 경우 eng/none 추가 요청 가능한 플레이스홀더 카드 포함
+        const isMemeDay = existingLangs.some(k => k.startsWith('memes-'));
+        const requestableLangs = isMemeDay
+            ? ['memes-eng', 'memes-none'].filter(k => !allImages[k])
+            : [];
+
+        const totalCards = existingLangs.length + requestableLangs.length;
+        const gridClass = totalCards === 1
+            ? 'flex justify-center'
+            : 'grid grid-cols-2 md:grid-cols-3 gap-3';
+        const cardWidthClass = totalCards === 1 ? 'w-full max-w-xs' : '';
+
+        const existingCards = existingLangs.map(lang => `
+            <div class="rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden ${cardWidthClass}">
+                <div class="flex items-center justify-between px-3.5 pt-3 pb-2">
+                    <span class="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                        ${LANG_LABELS[lang] ?? lang}
+                    </span>
+                    <div class="flex items-center gap-1.5">
+                        <button id="card-delete-btn-${lang}"
+                                onclick="deleteByLang('${lang}')"
+                                disabled
+                                title="이 이미지 삭제"
+                                class="flex items-center justify-center w-6 h-6 rounded-lg
+                                       text-gray-300 dark:text-gray-600
+                                       disabled:opacity-40 disabled:cursor-not-allowed
+                                       enabled:text-red-400 enabled:hover:bg-red-50 enabled:dark:hover:bg-red-950/20
+                                       transition-all">
+                            <svg class="card-delete-spinner hidden animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                            </svg>
+                            <span class="material-symbols-outlined card-delete-icon" style="font-size:14px">delete</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="mx-3 mb-3 rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-800 aspect-[4/5] relative">
+                    <div id="skeleton-${lang}" class="skeleton absolute inset-0"></div>
+                    <img id="img-${lang}"
+                         class="hidden absolute inset-0 w-full h-full object-contain cursor-zoom-in"
+                         alt="${LANG_LABELS[lang] ?? lang}"
+                         onload="onImageLoad('${lang}')"
+                         onerror="onImageError('${lang}')"
+                         onclick="openLightbox(this)"/>
+                </div>
+            </div>
+        `);
+
+        // 밈 day에서 요청 가능한 추가 variant 플레이스홀더 카드
+        const placeholderCards = requestableLangs.map(lang => `
+            <div class="rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 overflow-hidden ${cardWidthClass}">
+                <div class="flex items-center justify-between px-3.5 pt-3 pb-2">
+                    <span class="text-xs font-semibold text-gray-400 dark:text-gray-500">
+                        ${LANG_LABELS[lang] ?? lang}
+                    </span>
+                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full
+                                 bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+                        없음
+                    </span>
+                </div>
+                <div class="mx-3 mb-3 rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-700 aspect-[4/5] relative
+                            flex flex-col items-center justify-center gap-3">
+                    <span class="material-symbols-outlined text-3xl text-gray-300 dark:text-gray-500"
+                          style="font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24">
+                        add_photo_alternate
+                    </span>
+                    <button onclick="fetchByKey('${lang}')"
+                            id="card-fetch-btn-${lang}"
+                            class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold
+                                   bg-primary text-gray-800
+                                   hover:brightness-105 transition-all active:scale-95">
+                        <svg class="card-fetch-spinner hidden animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                        </svg>
+                        <span class="material-symbols-outlined card-fetch-icon" style="font-size:14px">download</span>
+                        요청하기
+                    </button>
+                </div>
+            </div>
+        `);
+
+        area.innerHTML = `
+            <div class="${gridClass}">
+                ${[...existingCards, ...placeholderCards].join('')}
+            </div>`;
+
+        // img src 설정 (렌더링 후)
+        existingLangs.forEach(lang => {
+            document.getElementById(`img-${lang}`).src =
+                `/admin/api/images/preview?date=${date}&lang=${lang}&t=${Date.now()}`;
+        });
+    }
+
+    // ─── 이미지 로드 콜백 ─────────────────────────────────────────
+    function onImageLoad(lang) {
+        document.getElementById(`skeleton-${lang}`).classList.add('hidden');
+        document.getElementById(`img-${lang}`).classList.remove('hidden');
+        const cardDeleteBtn = document.getElementById(`card-delete-btn-${lang}`);
+        if (cardDeleteBtn) cardDeleteBtn.disabled = false;
+    }
+
+    function onImageError(lang) {
+        const skeleton = document.getElementById(`skeleton-${lang}`);
+        skeleton.style.animation = 'none';
+        skeleton.style.background = 'transparent';
+        skeleton.innerHTML = `
+            <div class="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-2xl text-gray-300 dark:text-gray-600"
+                      style="font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24">broken_image</span>
+                <span class="text-xs text-gray-300 dark:text-gray-600">로드 실패</span>
+            </div>`;
+    }
+
+    // ─── 타입 선택 ───────────────────────────────────────────────
+    function selectType(type) {
+        selectedType = type;
+        document.querySelectorAll('.type-tab').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`type-btn-${type.toLowerCase()}`).classList.add('active');
+    }
+
+    // ─── 언어 선택 (토글) ────────────────────────────────────────
+    function toggleLang(lang) {
+        if (selectedLangs.has(lang)) {
+            if (selectedLangs.size > 1) {
+                selectedLangs.delete(lang);
+            }
+        } else {
+            selectedLangs.add(lang);
+        }
+        document.getElementById(`lang-btn-${lang}`).classList.toggle('active', selectedLangs.has(lang));
+    }
+
+    // ─── 버튼 상태 ───────────────────────────────────────────────
+    function updateButtons(langs) {
+        const hasAny = langs.length > 0;
+        document.getElementById('delete-btn').disabled = !hasAny;
+        document.getElementById('request-btn').disabled = hasAny;
+        const typeSelector = document.getElementById('type-selector');
+        typeSelector.classList.toggle('hidden', hasAny);
+        typeSelector.classList.toggle('flex', !hasAny);
+        const langSelector = document.getElementById('lang-selector');
+        langSelector.classList.toggle('hidden', hasAny);
+        langSelector.classList.toggle('flex', !hasAny);
+    }
+
+    function setButtonsDisabled(disabled) {
+        document.getElementById('delete-btn').disabled = disabled;
+        document.getElementById('request-btn').disabled = disabled;
+    }
+
+    function setLoading(on) {
+        document.getElementById('loading-spinner').classList.toggle('hidden', !on);
+    }
+
+    // on=true 일 때만 버튼 비활성화.
+    // on=false 일 때는 버튼 상태를 건드리지 않음 → loadImages → updateButtons 가 올바른 상태 설정
+    function setActionLoading(action, on) {
+        document.getElementById(`${action}-spinner`).classList.toggle('hidden', !on);
+        document.getElementById(`${action}-icon`).classList.toggle('hidden', on);
+        if (on) setButtonsDisabled(true);
+        document.querySelectorAll('.date-btn').forEach(btn => { btn.disabled = on; });
+    }
+
+    // 새로 가져온 이미지 키 목록으로 결과 메시지 생성
+    function buildFetchResultMessage(newLangs) {
+        const isQuotes = newLangs.some(k => k.startsWith('quotes-'));
+        const typeLabel = isQuotes ? '명언' : '밈';
+        const langLabels = newLangs.map(l => {
+            const suffix = l.split('-').pop();
+            return suffix === 'eng' ? '영어' : suffix === 'kor' ? '한국어' : '텍스트 없음';
+        });
+        return `${typeLabel} 이미지 ${newLangs.length}종을 가져왔어요 (${langLabels.join(', ')})`;
+    }
+
+    // ─── 카드별 삭제 ─────────────────────────────────────────────
+    async function deleteByLang(lang) {
+        // loadImages 가 DOM을 재렌더링하므로 스피너만 표시 후 진행
+        const btn = document.getElementById(`card-delete-btn-${lang}`);
+        btn.disabled = true;
+        btn.querySelector('.card-delete-icon').classList.add('hidden');
+        btn.querySelector('.card-delete-spinner').classList.remove('hidden');
+        setButtonsDisabled(true);
+
+        let deleteOk = false;
+        try {
+            const res = await fetch(`/admin/api/images?date=${selectedDate}&lang=${lang}`, {method: 'DELETE'});
+            deleteOk = res.ok;
+        } catch (e) { /* handled below */ } finally {
+            await loadImages(selectedDate);
+            if (deleteOk) {
+                showResult('success', `${LANG_LABELS[lang] ?? lang} 이미지를 삭제했어요`);
+            } else {
+                showResult('error', '삭제 중 오류가 발생했어요');
+            }
+        }
+    }
+
+    // ─── 카드별 개별 요청 (밈 추가 variant용) ────────────────────
+    async function fetchByKey(key) {
+        // loadImages 가 DOM을 재렌더링하므로 스피너만 표시 후 진행
+        const btn = document.getElementById(`card-fetch-btn-${key}`);
+        btn.disabled = true;
+        btn.querySelector('.card-fetch-icon').classList.add('hidden');
+        btn.querySelector('.card-fetch-spinner').classList.remove('hidden');
+        setButtonsDisabled(true);
+
+        const beforeStatus = {...currentImageStatus};
+        let fetchOk = false;
+        let errorMessage = null;
+        try {
+            const res = await fetch(`/admin/api/images/fetch?date=${selectedDate}&key=${key}`, {method: 'POST'});
+            if (res.ok) {
+                fetchOk = true;
+            } else if (res.status === 409) {
+                errorMessage = '다른 타입의 이미지가 이미 존재해요';
+            } else {
+                errorMessage = '요청 중 오류가 발생했어요';
+            }
+        } catch (e) {
+            errorMessage = '요청 중 오류가 발생했어요';
+        } finally {
+            await loadImages(selectedDate);
+            if (fetchOk) {
+                const newlyFetched = Object.keys(currentImageStatus)
+                    .filter(k => currentImageStatus[k] && !beforeStatus[k]);
+                if (newlyFetched.length > 0) {
+                    showResult('success', buildFetchResultMessage(newlyFetched));
+                } else {
+                    showResult('error', '이미지 서버에서 이미지를 가져오지 못했어요');
+                }
+            } else {
+                showResult('error', errorMessage ?? '요청 중 오류가 발생했어요');
+            }
+        }
+    }
+
+    // ─── 삭제 ────────────────────────────────────────────────────
+    async function deleteImages() {
+        setActionLoading('delete', true);
+        let deleteOk = false;
+        try {
+            const res = await fetch(`/admin/api/images?date=${selectedDate}`, {method: 'DELETE'});
+            deleteOk = res.ok;
+        } catch (e) { /* handled below */ } finally {
+            setActionLoading('delete', false);
+            await loadImages(selectedDate);
+            if (deleteOk) {
+                showResult('success', `${selectedDate} 이미지를 삭제했어요`);
+            } else {
+                showResult('error', '삭제 중 오류가 발생했어요');
+            }
+        }
+    }
+
+    // ─── 요청하기 ────────────────────────────────────────────────
+    async function requestImages() {
+        const beforeStatus = {...currentImageStatus};
+        setActionLoading('request', true);
+        let requestOk = false;
+        let errorMessage = null;
+        try {
+            const typePrefix = selectedType === 'QUOTES' ? 'quotes' : 'memes';
+            const langs = [...selectedLangs];
+            for (const lang of langs) {
+                const key = `${typePrefix}-${lang}`;
+                const res = await fetch(`/admin/api/images/fetch?date=${selectedDate}&key=${key}`, {method: 'POST'});
+                if (!res.ok) {
+                    if (res.status === 409) {
+                        errorMessage = selectedType === 'MEME'
+                            ? '이미 명언 이미지가 있어서 밈 이미지를 요청할 수 없어요'
+                            : '이미 밈 이미지가 있어서 명언 이미지를 요청할 수 없어요';
+                    } else {
+                        errorMessage = '요청 중 오류가 발생했어요';
+                    }
+                    break;
+                }
+            }
+            if (!errorMessage) requestOk = true;
+        } catch (e) {
+            errorMessage = '요청 중 오류가 발생했어요';
+        } finally {
+            setActionLoading('request', false);
+            await loadImages(selectedDate);
+            if (requestOk) {
+                const newlyFetched = Object.keys(currentImageStatus)
+                    .filter(k => currentImageStatus[k] && !beforeStatus[k]);
+                if (newlyFetched.length > 0) {
+                    showResult('success', buildFetchResultMessage(newlyFetched));
+                } else {
+                    showResult('error', '이미지 서버에서 이미지를 가져오지 못했어요');
+                }
+            } else {
+                showResult('error', errorMessage ?? '요청 중 오류가 발생했어요');
+            }
+        }
+    }
+
+    // ─── 결과 메시지 ─────────────────────────────────────────────
+    function showResult(type, message) {
+        const el = document.getElementById('action-result');
+        if (type === 'success') {
+            el.className = 'mt-3 flex items-center gap-2 text-xs px-4 py-2.5 rounded-xl bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400';
+            el.innerHTML = `<span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">check_circle</span>${message}`;
+        } else {
+            el.className = 'mt-3 flex items-center gap-2 text-xs px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400';
+            el.innerHTML = `<span class="material-symbols-outlined text-sm">error</span>${message}`;
+        }
+        el.classList.remove('hidden');
+    }
+
+    // ─── 라이트박스 ──────────────────────────────────────────────
+    function openLightbox(imgEl) {
+        const lb = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightbox-img');
+        lbImg.src = imgEl.src;
+        lbImg.alt = imgEl.alt;
+        lb.classList.remove('hidden');
+        lb.classList.add('flex');
+        // 약간의 딜레이 후 scale 복원 (진입 애니메이션)
+        requestAnimationFrame(() => lbImg.classList.replace('scale-95', 'scale-100'));
+        document.addEventListener('keydown', onLightboxKeydown);
+    }
+
+    function closeLightbox(e) {
+        // 오버레이 배경 클릭 또는 닫기 버튼 클릭(e 없음)일 때만 닫기
+        if (e && e.currentTarget !== e.target) return;
+        const lb = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightbox-img');
+        lbImg.classList.replace('scale-100', 'scale-95');
+        lb.classList.add('hidden');
+        lb.classList.remove('flex');
+        document.removeEventListener('keydown', onLightboxKeydown);
+    }
+
+    function onLightboxKeydown(e) {
+        if (e.key === 'Escape') {
+            const lb = document.getElementById('lightbox');
+            lb.classList.add('hidden');
+            lb.classList.remove('flex');
+            document.removeEventListener('keydown', onLightboxKeydown);
+        }
+    }
+
+    // ─── 초기 로드 ───────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => loadImages(today));
+</script>
+</body>
+</html>
