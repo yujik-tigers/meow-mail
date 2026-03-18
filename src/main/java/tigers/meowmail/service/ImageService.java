@@ -77,9 +77,11 @@ public class ImageService {
 			log.info("Memes images already exist for {}, continuing with MEMES type", date);
 		} else {
 			// 날짜를 시드로 사용 → 같은 날짜는 항상 같은 타입
-			long seed = LocalDate.parse(date).toEpochDay();
-			type = new Random(seed).nextBoolean() ? ImageType.QUOTES : ImageType.MEME;
-			log.info("Date-seeded type selection for {}: {}", date, type);
+//			long seed = LocalDate.parse(date).toEpochDay();
+//			type = new Random(seed).nextBoolean() ? ImageType.QUOTES : ImageType.MEME;
+//			log.info("Date-seeded type selection for {}: {}", date, type);
+			type = ImageType.QUOTES;
+			log.info("No images found for {}, defaulting to QUOTES type", date);
 		}
 
 		fetchAndSaveImages(date, type);
