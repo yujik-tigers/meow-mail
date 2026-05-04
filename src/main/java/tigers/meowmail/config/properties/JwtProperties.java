@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "jwt")
 public record JwtProperties(String secret, String issuer, Expiration expiration) {
 
-	public record Expiration(long verification, long subscription) {
+	public record Expiration(long verificationTtlMillis, long subscriptionTtlMillis) {
 
 	}
 

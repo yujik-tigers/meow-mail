@@ -30,11 +30,11 @@ public class JwtProvider {
 	}
 
 	public String generateVerificationToken(String email) {
-		return generateToken(email, jwtProperties.expiration().verification(), TokenType.VERIFICATION);
+		return generateToken(email, jwtProperties.expiration().verificationTtlMillis(), TokenType.VERIFICATION);
 	}
 
 	public String generateSubscriptionToken(String email) {
-		return generateToken(email, jwtProperties.expiration().subscription(), TokenType.SUBSCRIPTION);
+		return generateToken(email, jwtProperties.expiration().subscriptionTtlMillis(), TokenType.SUBSCRIPTION);
 	}
 
 	private String generateToken(String email, long expirationMs, TokenType tokenType) {

@@ -3,10 +3,12 @@ package tigers.meowmail.service;
 import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -34,29 +36,19 @@ public class EmailService {
 	// 구글 개인 계정 기준, 하루 전송 가능한 수신자 수: 100
 
 	private static final String SUBJECT_SUBSCRIPTION_VERIFICATION = "[매일묘일] 구독 이메일 인증";
-	private static final String SUBJECT_DAILY_CAT = "[매일묘일] 고양이 편지가 도착했어요 🐾";
-	private static final String SUBJECT_ADMIN_OTP = "[매일묘일] 관리자 인증 코드";
+	private static final String SUBJECT_DAILY_CAT = "[매일묘일] 오늘의 Cat-phrase 🐾";
 	private static final String EMAIL_SUBSCRIPTION_VERIFICATION = "email-subscription-verification";
-	private static final String EMAIL_DAILY_QUOTE = "email-daily-quote";
 	private static final String EMAIL_DAILY_MEME = "email-daily-meme";
-	private static final String EMAIL_ADMIN_OTP = "email-admin-otp";
-
-	// 정렬 순서: quotes는 eng → kor → none, memes는 kor → eng → none
-	private static final List<String> QUOTE_ORDER = List.of("quotes-eng", "quotes-kor", "quotes-none");
-	private static final List<String> MEME_ORDER = List.of("memes-kor", "memes-eng", "memes-none");
+	private static final String DAILY_MEME_ASSET_CID = "dailyMemeAsset";
+	private static final int DAILY_MAIL_BATCH_SIZE = 10;
+	private static final long DAILY_MAIL_BATCH_INTERVAL_MILLIS = 30_000L;
 
 	private final TemplateEngine templateEngine;
 	private final JavaMailSender mailSender;
-	private final ImageService imageService;
+	private final ContentService contentService;
 	private final SubscriptionRepository subscriptionRepository;
 	private final JwtProvider jwtProvider;
 	private final AppProperties appProperties;
-
-	public void sendAdminOtpEmail(String adminEmail, String code) {
-		Context context = new Context();
-		context.setVariable("code", code);
-		sendMail(adminEmail, SUBJECT_ADMIN_OTP, EMAIL_ADMIN_OTP, context);
-	}
 
 	public void sendVerificationEmail(String email, String token) {
 		String verificationUrl = appProperties.baseUrl() + "/api/subscriptions/verify?token=" + token;
@@ -68,90 +60,100 @@ public class EmailService {
 	}
 
 	// 정해진 시간에 ACTIVE 구독자에게 메일 발송
-	@Scheduled(cron = "${scheduled.send-email-cron}", zone = "${app.timezone}")
-	public void sendImageEmail() {
+	@Scheduled(cron = "${schedule.send-email-cron:0 0 8 * * *}", zone = "${app.timezone}")
+	public void sendDailyMemeEmail() {
 		ZoneId zoneId = ZoneId.of(appProperties.timezone());
 		ZonedDateTime nowKst = ZonedDateTime.now(zoneId);
 		String today = nowKst.toLocalDate().toString();
 
-		List<Path> imagePaths = imageService.findImagePaths(today);
-		if (imagePaths.isEmpty()) {
-			log.warn("No images found for today ({}). Fetching now.", today);
-			imageService.fetchAndSaveImages(today);
-			imagePaths = imageService.findImagePaths(today);
+		Optional<Path> assetPath = contentService.findDailyMemeAssetPath(today);
+		Optional<DailyMemeContent> content = contentService.findDailyMemeContent(today);
+		if (assetPath.isEmpty() || content.isEmpty()) {
+			log.warn("No complete daily meme content found for today ({}). Fetching now.", today);
+			contentService.fetchAndSaveDailyMemeContent(today);
+			assetPath = contentService.findDailyMemeAssetPath(today);
+			content = contentService.findDailyMemeContent(today);
 		}
-		if (imagePaths.isEmpty()) {
-			log.warn("No images for today ({}). Skipping email dispatch.", today);
+		if (assetPath.isEmpty() || content.isEmpty()) {
+			log.warn("No complete daily meme content for today ({}). Skipping email dispatch.", today);
 			return;
 		}
 
-		List<Subscription> targets = subscriptionRepository.findByStatus(SubscriptionStatus.ACTIVE);
-		if (targets.isEmpty()) {
-			log.info("No active subscribers");
-			return;
-		}
+		try {
+			List<Subscription> targets = subscriptionRepository.findByStatus(SubscriptionStatus.ACTIVE);
+			if (targets.isEmpty()) {
+				log.info("No active subscribers for today ({}). Skipping email dispatch.", today);
+				return;
+			}
 
-		boolean isMeme = imagePaths.stream()
-			.anyMatch(p -> p.getFileName().toString().contains("-memes-"));
-
-		log.info("Sending {} email to {} subscriber(s)", isMeme ? "MEME" : "QUOTES", targets.size());
-
-		if (isMeme) {
-			sendMemeEmails(today, targets, imagePaths);
-		} else {
-			sendQuoteEmails(today, targets, imagePaths);
+			sendMemeEmails(today, targets, assetPath.get(), content.get());
+		} finally {
+			contentService.deleteDailyMemeContent(today);
 		}
 	}
 
-	private void sendMemeEmails(String today, List<Subscription> targets, List<Path> imagePaths) {
-		// 존재하는 meme 이미지만 수집 (kor 기본, eng/none은 관리자 추가 요청 시)
-		Map<String, FileSystemResource> memeImages = collectImages(today, imagePaths, MEME_ORDER);
+	private void sendMemeEmails(String today, List<Subscription> targets, Path assetPath, DailyMemeContent content) {
+		FileSystemResource memeAsset = new FileSystemResource(assetPath);
+		log.info("Sending daily meme email with asset: {}, total targets={}", assetPath.getFileName(), targets.size());
 
-		if (memeImages.isEmpty()) {
-			log.warn("No meme images found for {}. Skipping email dispatch.", today);
-			return;
+		int successCount = 0;
+		int failureCount = 0;
+		try (ExecutorService executor = Executors.newFixedThreadPool(DAILY_MAIL_BATCH_SIZE)) {
+			for (int start = 0; start < targets.size(); start += DAILY_MAIL_BATCH_SIZE) {
+				int end = Math.min(start + DAILY_MAIL_BATCH_SIZE, targets.size());
+				List<Subscription> batch = targets.subList(start, end);
+				log.info("Sending daily meme mail batch: {}-{} of {}", start + 1, end, targets.size());
+
+				List<CompletableFuture<Boolean>> futures = batch.stream()
+					.map(subscriber -> CompletableFuture.supplyAsync(
+						() -> sendMemeEmail(today, subscriber, memeAsset, content), executor))
+					.toList();
+
+				for (CompletableFuture<Boolean> future : futures) {
+					if (future.join()) {
+						successCount++;
+					} else {
+						failureCount++;
+					}
+				}
+
+				if (end < targets.size() && !sleepBeforeNextBatch()) {
+					failureCount += targets.size() - end;
+					log.warn("Daily meme dispatch interrupted after {} of {} target(s)", end, targets.size());
+					break;
+				}
+			}
 		}
+		log.info("Daily meme dispatch completed: total={}, success={}, failure={}", targets.size(), successCount, failureCount);
+	}
 
-		log.info("Sending meme email with variants: {}", memeImages.keySet());
-
-		for (Subscription subscriber : targets) {
+	private boolean sendMemeEmail(String today, Subscription subscriber, FileSystemResource memeAsset, DailyMemeContent content) {
+		try {
 			Context context = buildEmailContext(today, subscriber.getEmail());
-			context.setVariable("memeImages", new ArrayList<>(memeImages.keySet()));
+			context.setVariable("memeAssetCid", DAILY_MEME_ASSET_CID);
+			context.setVariable("memeText", content.memeText());
+			context.setVariable("expressions", content.expressions());
+			context.setVariable("translation", content.translation());
+			context.setVariable("background", content.background());
+			context.setVariable("author", content.author());
+			context.setVariable("source", content.source());
 			String htmlContent = templateEngine.process(EMAIL_DAILY_MEME, context);
-			sendMailWithImages(subscriber.getEmail(), SUBJECT_DAILY_CAT, htmlContent, memeImages, "meme");
+			return sendMailWithInlineResources(subscriber.getEmail(), SUBJECT_DAILY_CAT, htmlContent,
+				Map.of(DAILY_MEME_ASSET_CID, memeAsset), "meme");
+		} catch (RuntimeException e) {
+			log.error("Failed to prepare daily meme mail to: {}", subscriber.getEmail(), e);
+			return false;
 		}
 	}
 
-	private void sendQuoteEmails(String today, List<Subscription> targets, List<Path> imagePaths) {
-		// 존재하는 quote 이미지만 수집 (eng/kor/none 모두 없으면 발송 안함, 1개 이상이면 발송)
-		Map<String, FileSystemResource> quoteImages = collectImages(today, imagePaths, QUOTE_ORDER);
-
-		if (quoteImages.isEmpty()) {
-			log.warn("No quote images for {}. Skipping email dispatch.", today);
-			return;
+	private boolean sleepBeforeNextBatch() {
+		try {
+			Thread.sleep(DAILY_MAIL_BATCH_INTERVAL_MILLIS);
+			return true;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return false;
 		}
-
-		log.info("Sending quote email with variants: {}", quoteImages.keySet());
-
-		for (Subscription subscriber : targets) {
-			Context context = buildEmailContext(today, subscriber.getEmail());
-			context.setVariable("quoteImages", new ArrayList<>(quoteImages.keySet()));
-			String htmlContent = templateEngine.process(EMAIL_DAILY_QUOTE, context);
-			sendMailWithImages(subscriber.getEmail(), SUBJECT_DAILY_CAT, htmlContent, quoteImages, "quote");
-		}
-	}
-
-	// 정해진 순서대로 존재하는 이미지 파일만 LinkedHashMap으로 수집
-	private Map<String, FileSystemResource> collectImages(String today, List<Path> imagePaths,
-		List<String> order) {
-		Map<String, FileSystemResource> result = new LinkedHashMap<>();
-		for (String key : order) {
-			imagePaths.stream()
-				.filter(p -> p.getFileName().toString().startsWith(today + "-" + key + "."))
-				.findFirst()
-				.ifPresent(path -> result.put(key, new FileSystemResource(path)));
-		}
-		return result;
 	}
 
 	private Context buildEmailContext(String today, String email) {
@@ -181,8 +183,8 @@ public class EmailService {
 		}
 	}
 
-	private void sendMailWithImages(String email, String subject, String htmlContent,
-		Map<String, FileSystemResource> imageResources, String type) {
+	private boolean sendMailWithInlineResources(String email, String subject, String htmlContent,
+		Map<String, FileSystemResource> inlineResources, String type) {
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_RELATED,
@@ -191,14 +193,16 @@ public class EmailService {
 			helper.setTo(email);
 			helper.setSubject(subject);
 			helper.setText(htmlContent, true);
-			for (Map.Entry<String, FileSystemResource> entry : imageResources.entrySet()) {
+			for (Map.Entry<String, FileSystemResource> entry : inlineResources.entrySet()) {
 				helper.addInline(entry.getKey(), entry.getValue(), toMediaType(entry.getValue().getFilename()));
 			}
 
 			mailSender.send(message);
 			log.info("Daily {} mail sent to: {}", type, email);
+			return true;
 		} catch (MessagingException e) {
 			log.error("Failed to send daily {} mail to: {}", type, email, e);
+			return false;
 		}
 	}
 

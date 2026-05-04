@@ -115,12 +115,11 @@ public class SubscriptionService {
 			email = jwtProvider.getEmailFrom(token);
 			subscriptionRepo.findByEmail(email).ifPresent(subscription -> {
 				Instant now = Instant.now(clock);
-				subscription.markVerified(now);
 				subscription.markActive(now);
 				subscriptionRepo.save(subscription);
 			});
-			sendSseEvent(email, "verified", "success", "Your email has been successfully verified.");
-			return new MessageResponse("Your email has been successfully verified.");
+			sendSseEvent(email, "verified", "success", "Your subscription has been successfully started.");
+			return new MessageResponse("Your subscription has been successfully started.");
 		} catch (Exception e) {
 			sendSseEvent(email, "verified", "fail", "Email verification failed: " + e.getMessage());
 			return new MessageResponse("Email verification failed.");
@@ -129,7 +128,7 @@ public class SubscriptionService {
 
 	public boolean isVerified(String email) {
 		return subscriptionRepo.findByEmail(email.toLowerCase())
-			.map(s -> s.getStatus() == SubscriptionStatus.VERIFIED || s.getStatus() == SubscriptionStatus.ACTIVE)
+			.map(s -> s.getStatus() == SubscriptionStatus.ACTIVE)
 			.orElse(false);
 	}
 
@@ -149,20 +148,6 @@ public class SubscriptionService {
 				emitter.completeWithError(e);
 			}
 		});
-	}
-
-	public MessageResponse subscribe(SubscriptionRequest request) {
-		Subscription subscription = subscriptionRepo.findByEmail(request.email().toLowerCase())
-			.orElseThrow(() -> new RuntimeException("No verified email information found."));
-
-		if (subscription.getStatus() != SubscriptionStatus.VERIFIED) {
-			throw new IllegalStateException("Email verification is required before subscribing.");
-		}
-
-		subscription.markActive(Instant.now(clock));
-		subscriptionRepo.save(subscription);
-
-		return new MessageResponse("Your email has been successfully subscribed.");
 	}
 
 	public UnsubscriptionResult unsubscribe(String token) {

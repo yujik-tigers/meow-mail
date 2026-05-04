@@ -57,7 +57,7 @@ public class SubscriptionController {
 	@GetMapping("/api/subscriptions/verify")
 	public String verify(@RequestParam String token, Model model) {
 		MessageResponse response = subscriptionService.verify(token);
-		boolean success = response.message().startsWith("Your email has been successfully");
+		boolean success = response.message().startsWith("Your subscription has been successfully");
 		model.addAttribute("success", success);
 		model.addAttribute("message", response.message());
 		return VIEW_VERIFY_RESULT;
@@ -82,13 +82,6 @@ public class SubscriptionController {
 	@GetMapping(value = "/api/subscriptions/verify/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public SseEmitter subscribeVerification(@RequestParam String email) {
 		return subscriptionService.openEmitter(email);
-	}
-
-	@ResponseBody
-	@PostMapping("/api/subscriptions")
-	public ResponseEntity<MessageResponse> subscribe(@Valid @RequestBody SubscriptionRequest request) {
-		MessageResponse response = subscriptionService.subscribe(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 }

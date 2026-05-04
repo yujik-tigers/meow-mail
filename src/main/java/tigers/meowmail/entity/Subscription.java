@@ -34,6 +34,8 @@ public class Subscription {
 
 	private Instant startedAt;
 
+	private Instant stoppedAt;
+
 	@Column(nullable = false)
 	private Instant createdAt;
 
@@ -48,12 +50,8 @@ public class Subscription {
 
 	public void markInactive(Instant inactiveAt) {
 		this.status = SubscriptionStatus.INACTIVE;
+		this.stoppedAt = inactiveAt;
 		this.updatedAt = inactiveAt;
-	}
-
-	public void markVerified(Instant verifiedAt) {
-		this.status = SubscriptionStatus.VERIFIED;
-		this.updatedAt = verifiedAt;
 	}
 
 }

@@ -6,158 +6,167 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <title>매일묘일</title>
 </head>
-<body style="margin:0;padding:0;background-color:#f5f0ea;font-family:'Apple SD Gothic Neo','Malgun Gothic','맑은 고딕',Arial,sans-serif;">
+<body style="margin:0;padding:0;background-color:#eef1f4;font-family:Arial,'Malgun Gothic','맑은 고딕',sans-serif;">
 
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
-       style="background-color:#f5f0ea;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#eef1f4"
+       style="margin:0;padding:0;background-color:#eef1f4;">
     <tr>
-        <td align="center" style="padding:40px 16px 36px;">
+        <td align="center" style="padding:28px 10px;">
 
-            <!-- ── 전체 카드 (다이어리 페이지) ── -->
-            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
-                   style="width:560px;max-width:100%;background-color:#fffdf8;
-                          border:1px solid #e8e0d4;
-                          box-shadow:3px 4px 0 #e0d8cc, 6px 8px 0 #d8d0c4;
-                          border-radius:2px;margin:0 auto;">
+            <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff"
+                   style="width:600px;background-color:#ffffff;border:1px solid #c8ced8;">
 
-                <!-- ── 상단 스프링 구멍 장식 ── -->
                 <tr>
-                    <td style="padding:14px 28px 10px;border-bottom:2px solid #f0e8de;">
+                    <td width="52" valign="top" bgcolor="#fbfbfb"
+                        style="width:52px;background-color:#fbfbfb;border-right:2px solid #d85858;">
+                        <table role="presentation" width="52" cellspacing="0" cellpadding="0" border="0">
+                            <tr><td height="36" style="height:36px;font-size:0;line-height:0;">&nbsp;</td></tr>
+                            <tr><td align="center" height="36" style="height:36px;border-top:1px solid #e3e8ef;"><span style="font-size:13px;line-height:36px;color:#b7c0cc;">O</span></td></tr>
+                            <tr><td align="center" height="36" style="height:36px;border-top:1px solid #e3e8ef;"><span style="font-size:13px;line-height:36px;color:#b7c0cc;">O</span></td></tr>
+                            <tr><td align="center" height="36" style="height:36px;border-top:1px solid #e3e8ef;"><span style="font-size:13px;line-height:36px;color:#b7c0cc;">O</span></td></tr>
+                            <tr><td align="center" height="36" style="height:36px;border-top:1px solid #e3e8ef;"><span style="font-size:13px;line-height:36px;color:#b7c0cc;">O</span></td></tr>
+                            <tr><td align="center" height="36" style="height:36px;border-top:1px solid #e3e8ef;"><span style="font-size:13px;line-height:36px;color:#b7c0cc;">O</span></td></tr>
+                            <tr><td align="center" height="36" style="height:36px;border-top:1px solid #e3e8ef;"><span style="font-size:13px;line-height:36px;color:#b7c0cc;">O</span></td></tr>
+                            <tr><td height="288" style="height:288px;border-top:1px solid #e3e8ef;font-size:0;line-height:0;">&nbsp;</td></tr>
+                        </table>
+                    </td>
+
+                    <td valign="top" style="padding:0;">
                         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                             <tr>
-                                <td>
-                                    <!-- 구멍들 -->
-                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;margin-right:10px;"></span>
-                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;margin-right:10px;"></span>
-                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;margin-right:10px;"></span>
-                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;margin-right:10px;"></span>
-                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;margin-right:10px;"></span>
-                                    <span style="display:inline-block;width:12px;height:12px;background:#f5f0ea;border:2px solid #ddd4c8;border-radius:50%;"></span>
+                                <td style="padding:22px 28px 14px;border-bottom:2px solid #2f5597;">
+                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                        <tr>
+                                            <td align="left" valign="middle">
+                                                <p style="margin:0;font-size:12px;line-height:18px;color:#6f7782;">
+                                                    매일묘일, 고양이 밈으로 영어 한 문장
+                                                </p>
+                                                <p style="margin:2px 0 0;font-size:22px;line-height:30px;font-weight:bold;color:#202938;">
+                                                    Cat-phrase
+                                                </p>
+                                            </td>
+                                            <td align="right" valign="middle">
+                                                <p style="margin:0;font-size:12px;line-height:18px;color:#6f7782;">Date</p>
+                                                <p style="margin:2px 0 0;font-size:12px;line-height:20px;color:#6f7782;"
+                                                   th:text="${date}">2026-05-04</p>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
-                                <td align="right">
-                                    <!-- 날짜 스탬프 -->
-                                    <span style="display:inline-block;background:#fff0f5;border:1.5px dashed #ffb3c8;
-                                                 color:#c07090;font-size:11px;font-family:'Courier New',Courier,monospace;
-                                                 padding:3px 12px;border-radius:20px;letter-spacing:0.08em;"
-                                          th:text="${date}">2025-01-01</span>
+                            </tr>
+
+                            <tr>
+                                <td align="center" style="padding:24px 28px 0;">
+                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                                           style="border:1px solid #cfd7e3;background-color:#f9fafc;">
+                                        <tr>
+                                            <td align="center" style="padding:12px;">
+                                                <img th:src="'cid:' + ${memeAssetCid}"
+                                                     alt="cat meme image"
+                                                     width="492"
+                                                     border="0"
+                                                     style="display:block;width:100%;max-width:492px;height:auto;border:0;outline:none;text-decoration:none;"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:0 16px 14px;">
+                                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                                    <tr>
+                                                        <td height="36" style="height:36px;border-top:1px solid #d9e3f0;">
+                                                            <p style="margin:0;font-size:14px;line-height:36px;color:#4b5565;text-align:center;"
+                                                               th:text="${memeText}">english sentence</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr th:if="${(author != null and !#strings.isEmpty(author)) or (source != null and !#strings.isEmpty(source))}">
+                                                        <td height="24" valign="middle" style="height:24px;border-top:1px solid #d9e3f0;vertical-align:middle;">
+                                                            <p style="margin:0;font-size:12px;line-height:24px;color:#7b8491;text-align:center;">
+                                                                <span th:if="${author != null and !#strings.isEmpty(author)}"
+                                                                      th:text="'by ' + ${author}">by author</span>
+                                                                <span th:if="${(author != null and !#strings.isEmpty(author)) and (source != null and !#strings.isEmpty(source))}"
+                                                                      style="color:#aab2bd;">&nbsp; | &nbsp;</span>
+                                                                <span th:if="${source != null and !#strings.isEmpty(source)}"
+                                                                      th:text="${source}">source</span>
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:24px 28px 0;">
+                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                                           style="border-top:1px solid #d9e3f0;">
+                                        <tr>
+                                            <td height="36" style="height:36px;border-bottom:1px solid #d9e3f0;">
+                                                <p style="margin:0;font-size:14px;line-height:36px;color:#596273;">
+                                                    Vocabulary / Expression
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="36" style="height:36px;border-bottom:1px solid #d9e3f0;">
+                                                <p style="margin:0;font-size:16px;line-height:36px;font-weight:bold;color:#1d2d44;"
+                                                   th:text="${expressions}">english expression</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="36" style="height:36px;border-bottom:1px solid #d9e3f0;">
+                                                <p style="margin:0;font-size:14px;line-height:36px;color:#d85858;font-weight:bold;"
+                                                   th:text="${translation}">translations</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="36" style="height:36px;border-bottom:1px solid #d9e3f0;font-size:0;line-height:0;">&nbsp;</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${background != null and !#strings.isEmpty(background)}">
+                                <td style="padding:0 28px 0;">
+                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                        <tr>
+                                            <td height="36" style="height:36px;border-bottom:1px solid #d9e3f0;">
+                                                <p style="margin:0;font-size:14px;line-height:36px;color:#596273;">
+                                                    Context note
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border-bottom:1px solid #d9e3f0;">
+                                                <p style="margin:0;font-size:14px;line-height:36px;color:#293241;"
+                                                   th:text="${background}">background</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="36" style="height:36px;border-bottom:1px solid #d9e3f0;font-size:0;line-height:0;">&nbsp;</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:14px 28px 28px;border-top:2px solid #2f5597;">
+                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                        <tr>
+                                            <td>
+                                                <p style="margin:0;font-size:12px;line-height:20px;color:#7b8491;text-align:center;">
+                                                    <a th:href="${unsubscribeUrl}" target="_blank"
+                                                       style="color:#5e6b7a;text-decoration:underline;">구독 취소</a>
+                                                    <span style="color:#aab2bd;">&nbsp; | &nbsp;</span>
+                                                    <a href="mailto:dev.mail.meow@gmail.com"
+                                                       style="color:#5e6b7a;text-decoration:underline;">묘한 아이디어 제보</a>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>
-                    </td>
-                </tr>
-
-                <!-- ── 와시 테이프 + 헤더 ── -->
-                <tr>
-                    <td align="center" style="padding:20px 28px 6px;">
-                        <!-- 와시 테이프 조각 (핑크) -->
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0"
-                               style="margin-bottom:16px;">
-                            <tr>
-                                <td style="background-color:#ffd6e7;padding:5px 36px;border-radius:2px;opacity:0.9;">
-                                    <span style="font-size:13px;color:#e08aaa;letter-spacing:0.25em;">✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦</span>
-                                </td>
-                            </tr>
-                        </table>
-
-                        <!-- 타이틀 -->
-                        <p style="margin:0 0 4px;font-size:11px;color:#c0a0b0;letter-spacing:0.22em;text-transform:uppercase;">
-                            today's meow
-                        </p>
-                    </td>
-                </tr>
-
-                <!-- ── 구분선 (줄 노트 느낌) ── -->
-                <tr>
-                    <td style="padding:14px 28px 0;">
-                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-                            <tr>
-                                <td style="border-top:1px solid #f0e4d8;font-size:0;">&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <td style="padding-top:5px;border-top:1px solid #f0e4d8;font-size:0;">&nbsp;</td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-
-                <!-- ── 이미지 (폴라로이드 프레임) ── -->
-                <tr>
-                    <td align="center" style="padding:16px 36px 8px;">
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0"
-                               style="background:#ffffff;
-                                      padding:10px 10px 32px 10px;
-                                      box-shadow:2px 3px 0 #e8e0d4, 4px 6px 0 #d8d0c4;
-                                      border:1px solid #efe8e0;">
-                            <tr>
-                                <td>
-                                    <img th:src="'cid:' + ${memeImages[0]}"
-                                         alt="오늘의 고양이 짤"
-                                         width="468"
-                                         style="display:block;width:100%;max-width:468px;height:auto;border:none;"/>
-                                </td>
-                            </tr>
-                            <!-- 폴라로이드 하단 메모란 -->
-                            <tr>
-                                <td align="center" style="padding-top:10px;">
-                                    <span style="font-size:13px;color:#b8a8b0;font-family:'Courier New',Courier,monospace;
-                                                 letter-spacing:0.06em;">
-
-                                    </span>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-
-                <!-- ── 스티커 장식 영역 ── -->
-                <tr>
-                    <td style="padding:20px 36px 10px;">
-                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-                            <tr>
-                                <!-- 왼쪽 스티커 뭉치 -->
-                                <td width="50%">
-                                </td>
-                                <!-- 오른쪽 메모 스티커 -->
-                                <td align="right">
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-
-                <!-- ── 하단 와시 테이프 (민트) ── -->
-                <tr>
-                    <td style="padding:10px 0 0;border-top:2px solid #f0e8de;">
-                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-                            <tr>
-                                <td align="center"
-                                    style="background-color:#c8f0e4;padding:7px 0;font-size:11px;
-                                           color:#50a080;letter-spacing:0.2em;">
-                                    ✿ &nbsp; ✿ &nbsp; ✿ &nbsp; ✿ &nbsp; ✿ &nbsp; ✿ &nbsp; ✿ &nbsp; ✿
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-
-            </table>
-            <!-- ── /전체 카드 ── -->
-
-            <!-- ── 구독 관리 링크 ── -->
-            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
-                   style="width:360px;margin-top:20px;">
-                <tr>
-                    <td align="center">
-                        <a th:href="${unsubscribeUrl}"
-                           target="_blank"
-                           style="font-size:13px;color:#a09890;text-decoration:none;letter-spacing:0.03em;">
-                            구독 취소
-                        </a>
-                        <span style="font-size:12px;color:#c8c0b8;padding:0 8px;">·</span>
-                        <a href="mailto:dev.mail.meow@gmail.com"
-                           style="font-size:13px;color:#a09890;text-decoration:none;letter-spacing:0.03em;">
-                            묘한 아이디어 제보
-                        </a>
                     </td>
                 </tr>
             </table>

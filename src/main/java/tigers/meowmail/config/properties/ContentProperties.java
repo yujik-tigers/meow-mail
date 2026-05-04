@@ -2,12 +2,10 @@ package tigers.meowmail.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "image")
-public record ImageProperties(
+@ConfigurationProperties(prefix = "content")
+public record ContentProperties(
 	String apiBaseUrl,
-	String fetchQuotesPath,
-	String fetchMemesPath,
-	String deletePath,
+	String dailyMemePath,
 	String storagePath,
 	int maxBufferSize) {
 
