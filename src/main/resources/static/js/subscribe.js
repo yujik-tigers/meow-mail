@@ -4,7 +4,7 @@ function isValidEmail(email) {
 }
 
 function hideAllEmailStatus() {
-    ['email-error', 'verify-pending', 'verify-expired', 'verify-success', 'verify-fail']
+    ['email-hint', 'email-error', 'verify-pending', 'verify-expired', 'verify-success', 'verify-fail']
         .forEach(id => document.getElementById(id).classList.add('hidden'));
 }
 
@@ -140,7 +140,7 @@ function openSse(email) {
 // ── 인증 버튼 로딩 상태 ──
 function setVerifyBtnLoading(loading) {
     document.getElementById('verify-btn-spinner').classList.toggle('hidden', !loading);
-    document.getElementById('verify-btn-label').textContent = loading ? '전송 중' : '이메일 인증 및 구독하기';
+    document.getElementById('verify-btn-label').textContent = loading ? '전송 중' : '이메일 인증하고 구독하기';
 }
 
 // ── 인증 취소 ──
@@ -155,10 +155,11 @@ function cancelVerification() {
     }
     stopPolling();
     hideAllEmailStatus();
+    show('email-hint');
     document.getElementById('email').classList.remove('input-error', 'input-verified');
     document.getElementById('email').readOnly = false;
     document.getElementById('send-verify-btn').disabled = false;
-    document.getElementById('verify-btn-label').textContent = '이메일 인증 및 구독하기';
+    document.getElementById('verify-btn-label').textContent = '이메일 인증하고 구독하기';
     updateSendBtnState();
 }
 
@@ -221,17 +222,8 @@ document.getElementById('send-verify-btn').addEventListener('click', async funct
 
 // ── 완료 화면 ──
 function showDone(success, title, message) {
-    const iconEl = document.getElementById('done-icon');
-    if (success) {
-        iconEl.innerHTML = '<div class="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style="background:rgba(255,202,69,0.15);"><span class="material-symbols-outlined" style="font-size:2.8rem;color:#ffca45;font-variation-settings:\'FILL\' 1,\'wght\' 400,\'GRAD\' 0,\'opsz\' 48;">check_circle</span></div>';
-    } else {
-        iconEl.innerHTML = '<span style="font-size:2.5rem;">😿</span>';
-    }
     document.getElementById('done-title').textContent = title;
     document.getElementById('done-message').textContent = message;
-    if (!success) {
-        document.getElementById('done-card').style.boxShadow = '0 18px 35px rgba(248,113,113,0.22)';
-    }
     document.getElementById('form-card-wrapper').classList.add('hidden');
     document.getElementById('done-card').classList.remove('hidden');
 }
@@ -251,6 +243,7 @@ document.getElementById('email').addEventListener('input', function () {
         document.getElementById('send-verify-btn').disabled = false;
     }
     hideAllEmailStatus();
+    show('email-hint');
     this.classList.remove('input-error', 'input-verified');
     updateSendBtnState();
 });

@@ -1,217 +1,118 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>구독 신청 · 매일묘일</title>
+    <title>매일묘일 · Cat-phrase</title>
 
-    <link rel="stylesheet" as="style" crossorigin
+    <link rel="stylesheet" crossorigin
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          rel="stylesheet"/>
-
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#ffca45",
-                        secondary: "#a1c606",
-                        "pastel-bg": "#fffefc",
-                        "background-dark": "#081022",
-                    },
-                    fontFamily: {
-                        display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-                        sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-                    },
-                },
-            },
-        };
-    </script>
-    <link rel="stylesheet" href="/css/subscribe.css"/>
+    <link rel="stylesheet" th:href="@{/css/view.css}"/>
 </head>
 
-<body class="min-h-screen flex flex-col p-6 transition-colors duration-300">
+<body>
+<div class="page-shell">
+    <header class="topbar">
+        <a class="brand" href="/subscribe" aria-label="매일묘일 홈">
+            <span class="brand-mark">M</span>
+            <span>매일묘일</span>
+        </a>
+        <a class="top-link" href="mailto:dev.mail.meow@gmail.com">아이디어 제보하기</a>
+    </header>
 
-<div class="flex-1 flex flex-col w-full max-w-5xl mx-auto">
+    <main class="hero">
+        <section class="hero-copy" aria-labelledby="main-title">
+            <p class="eyebrow">Cat-phrase</p>
+            <h1 id="main-title" class="hero-title">
+                고양이 밈과 함께<br/>
+                다양한 영어 표현을 익혀요
+            </h1>
+            <p class="hero-description">
+                매일 오전 8시, 고양이 사진과 함께 표현, 뜻, 맥락을 노트에 정리해 보내드립니다. <br/>
+                가볍게 웃고 바로 기억할 수 있는 영어 한 줄을 받아보세요!
+            </p>
 
-    <!-- ── STEP 1: 구독 폼 ── -->
-    <div id="step-form" class="step active">
+            <div class="form-panel" aria-labelledby="subscribe-title">
+                <div id="form-card-wrapper">
+                    <h2 id="subscribe-title" class="panel-title">구독 신청</h2>
+                    <p class="panel-copy">
+                        이메일 인증을 완료하면 다음 발송일부터 그날의 고양이 노트를 받을 수 있습니다.
+                    </p>
 
-        <!-- 그리드 + 푸터를 감싸는 flex 컬럼 컨테이너 -->
-        <div class="flex flex-col" style="min-height:calc(100vh - 3rem);">
-
-            <!-- 상단 네비게이션 -->
-            <div class="flex items-center justify-between py-2 mb-6">
-                <div class="flex items-center gap-1">
-                    <span class="material-symbols-outlined text-base">pets</span>
-                    <span class="font-bold text-gray-800 dark:text-white text-base tracking-tight">매일묘일</span>
-                </div>
-                <div class="backdrop-blur-md px-4 py-2 rounded-full text-xs flex items-center gap-2 font-semibold bg-white/60 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400">
-                    <a href="mailto:dev.mail.meow@gmail.com">묘한 아이디어 제보하기</a>
-                </div>
-            </div>
-
-            <!-- 전체 너비 히어로 헤딩 -->
-            <div>
-                <h1 class="text-5xl font-extrabold leading-[1.15] tracking-tight">
-                    <span class="text-gray-800 dark:text-white block mb-1">고양이 편지</span>
-                    <span style="color:#ffca45;" class="block">배송 서비스</span>
-                </h1>
-            </div>
-
-            <!-- 메인 그리드: 남은 높이를 모두 차지 -->
-            <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-10">
-
-                <!-- ── 왼쪽: 고양이 이미지 ── -->
-                <div class="self-center rounded-3xl overflow-hidden bg-amber-50 dark:bg-gray-800 w-full h-[420px] my-3">
-                    <img th:src="@{img/main.jpg}" alt="고양이 이미지" class="w-full h-full object-cover"/>
-                </div>
-
-                <!-- ── 오른쪽: 폼 카드 ── -->
-                <div class="flex flex-col justify-center gap-4">
-
-                    <!-- 폼 -->
-                    <div id="form-card-wrapper">
-                        <div>
-
-                            <!-- 카드 헤더 -->
-                            <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">구독하기</h2>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                매일 매일 고양이 편지를 보내드려요
-                            </p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-7">
-                                이메일 인증이 완료되면 바로 구독이 시작돼요
-                            </p>
-
-                            <!-- 이메일 입력 -->
-                            <div class="mb-2">
-                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
-                                       for="email">
-                                    이메일 주소
-                                </label>
-                                <div class="relative">
-                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-base pointer-events-none">
-                                        mail
-                                    </span>
-                                    <input id="email" name="email" type="email" autocomplete="email"
-                                           placeholder="example@gmail.com"
-                                           class="w-full pl-10 pr-3 py-3 rounded-2xl border border-gray-100 text-sm dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-gray-100 transition"/>
-                                </div>
-                            </div>
-
-                            <!-- 이메일 하단 상태 영역 -->
-                            <div id="email-status" class="mb-5 min-h-[3.5rem]">
-                                <!-- 힌트 -->
-                                <p id="email-hint" class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
-                                    이메일 인증을 완료하면 구독이 시작돼요
-                                </p>
-                                <!-- 에러 메시지 -->
-                                <p id="email-error" class="hidden mt-1.5 text-amber-500 text-xs flex items-center gap-1">
-                                    <span id="email-error-msg"></span>
-                                </p>
-                                <!-- 인증 대기 + 타이머 -->
-                                <div id="verify-pending" class="hidden mt-1.5">
-                                    <div class="flex items-center justify-between">
-                                        <p class="text-xs text-amber-500 dark:text-amber-400 flex items-center gap-1">
-                                            인증 메일을 보냈어요 메일함을 확인해 주세요
-                                        </p>
-                                        <div class="flex items-center gap-2">
-                                            <span id="timer"
-                                                  class="text-xs font-mono font-bold text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
-                                                30:00
-                                            </span>
-                                            <button id="cancel-verify-btn" type="button"
-                                                    class="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-2.5 py-0.5 rounded-full transition active:scale-95 flex items-center gap-1">
-                                                취소
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- 타이머 만료 -->
-                                <p id="verify-expired" class="hidden mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">timer_off</span>
-                                    인증 유효 시간이 만료되었어요 다시 요청해 주세요
-                                </p>
-                                <!-- 인증 성공 -->
-                                <p id="verify-success" class="hidden mt-1.5 text-xs text-secondary flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">verified</span>
-                                    이메일 인증을 완료했어요
-                                </p>
-                                <!-- 인증 실패 -->
-                                <p id="verify-fail" class="hidden mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">cancel</span>
-                                    <span id="verify-fail-msg"></span>
-                                </p>
-                            </div>
-
-                            <!-- 인증하기 버튼 -->
-                            <button id="send-verify-btn" type="button" disabled
-                                    class="w-full py-3.5 rounded-2xl bg-primary text-gray-800 font-bold text-sm flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed">
-                                <svg id="verify-btn-spinner" class="hidden animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                                </svg>
-                                <span id="verify-btn-label" class="text-gray-700">이메일 인증 및 구독하기</span>
-                                <span class="material-symbols-outlined text-base leading-none">arrow_forward</span>
-                            </button>
-
-                            <!-- 구분선 + 피처 -->
-                            <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 grid grid-cols-2 gap-4">
-                                <div class="flex items-start gap-2.5">
-                                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                                         style="background:rgba(255,202,69,0.15);">
-                                        <span class="material-symbols-outlined text-base" style="color:#ffca45;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">schedule</span>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-snug">매일 아침 8시</p>
-                                        <p class="text-xs text-gray-400 dark:text-gray-500 leading-snug">정시 편지 배송</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-2.5">
-                                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                                         style="background:rgba(255,202,69,0.15);">
-                                        <span class="material-symbols-outlined text-base" style="color:#ffca45;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">verified</span>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-snug">냥님 검수 완료</p>
-                                        <p class="text-xs text-gray-400 dark:text-gray-500 leading-snug">품질 보장 편지</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
+                    <label class="field-label" for="email">이메일 주소</label>
+                    <div class="input-wrap">
+                        <input id="email" name="email" type="email" autocomplete="email"
+                               placeholder="example@gmail.com" class="email-input"/>
                     </div>
 
-                    <!-- 완료 카드 (hidden by default) -->
-                    <div id="done-card" class="hidden">
-                        <div class="text-center">
-                            <div id="done-icon" class="mb-10 floating"></div>
-                            <h2 id="done-title" class="text-xl font-bold text-gray-800 dark:text-white mb-5"></h2>
-                            <p id="done-message" class="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed whitespace-pre-line"></p>
+                    <div id="email-status" class="status-area" aria-live="polite">
+                        <p id="email-hint" class="status-text">인증 메일의 링크를 누르면 구독이 시작됩니다.</p>
+                        <p id="email-error" class="status-text error hidden">
+                            <span id="email-error-msg"></span>
+                        </p>
+                        <div id="verify-pending" class="hidden">
+                            <div class="pending-row">
+                                <p class="status-text">인증 메일을 보냈습니다. 메일함을 확인해 주세요.</p>
+                                <div>
+                                    <span id="timer" class="timer-pill">30:00</span>
+                                    <button id="cancel-verify-btn" type="button" class="text-button">취소</button>
+                                </div>
+                            </div>
                         </div>
+                        <p id="verify-expired" class="status-text error hidden">인증 유효 시간이 만료되었습니다. 다시 요청해 주세요.</p>
+                        <p id="verify-success" class="status-text success hidden">이메일 인증이 완료되었습니다.</p>
+                        <p id="verify-fail" class="status-text error hidden">
+                            <span id="verify-fail-msg"></span>
+                        </p>
                     </div>
 
+                    <button id="send-verify-btn" type="button" disabled class="primary-button">
+                        <svg id="verify-btn-spinner" class="spinner hidden" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle opacity="0.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path opacity="0.75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                        </svg>
+                        <span id="verify-btn-label">이메일 인증하고 구독하기</span>
+                    </button>
+
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <p class="feature-title">매일 오전 8시</p>
+                            <p class="feature-copy">하루에 한 번만, 학습하기 좋은 분량으로 보냅니다.</p>
+                        </div>
+                        <div class="feature-item">
+                            <p class="feature-title">딱 한 장만</p>
+                            <p class="feature-copy">이미지 맥락, 표현, 번역을 한 화면에 정리합니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="done-card" class="done-card hidden">
+                    <h2 id="done-title" class="panel-title"></h2>
+                    <p id="done-message" class="panel-copy"></p>
                 </div>
             </div>
+        </section>
 
-            <!-- 저작권 -->
-            <div class="py-4 text-center text-xs text-gray-400 dark:text-gray-600 my-3">
-                © 2026 Mail Meowil. All rights reserved.
+        <section class="sample-column" aria-label="메일 예시">
+            <div class="sample-note" aria-label="메일 예시">
+                <img th:src="@{/img/main.jpeg}" alt="고양이 밈 예시 이미지" class="sample-photo"/>
+                <div class="sample-lines">
+                    <div class="sample-row">
+                        <span class="sample-label">Phrase</span>
+                        <span class="sample-value">teach someone to do something</span>
+                    </div>
+                    <div class="sample-row">
+                        <span class="sample-label">Meaning</span>
+                        <span>~에게 무엇을 하는 법을 가르치다</span>
+                    </div>
+                </div>
             </div>
+        </section>
+    </main>
 
-        </div>
-    </div>
-
-    <!-- step-done: JS 참조용 (더 이상 화면 전환에 사용하지 않음) -->
-    <div id="step-done" class="hidden"></div>
-
+    <footer class="footer">© 2026 Mail Meowil. All rights reserved.</footer>
 </div>
 
-<script src="/js/subscribe.js"></script>
+<script th:src="@{/js/subscribe.js}"></script>
 </body>
 </html>

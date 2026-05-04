@@ -5,128 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title th:text="${success} ? '이메일 인증 완료 · 매일묘일' : '이메일 인증 실패 · 매일묘일'">매일묘일</title>
 
-    <link rel="stylesheet" as="style" crossorigin
+    <link rel="stylesheet" crossorigin
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-          rel="stylesheet"/>
-
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#ffca45",
-                        secondary: "#a1c606",
-                        "pastel-bg": "#fffefc",
-                        "background-dark": "#081022",
-                    },
-                    fontFamily: {
-                        display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-                        sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-                    },
-                },
-            },
-        };
-    </script>
-    <style type="text/tailwindcss">
-        body {
-            @apply bg-pastel-bg dark:bg-background-dark font-sans;
-        }
-
-        body.error-theme {
-            background-color: #fff5f5;
-        }
-
-        html.dark body.error-theme {
-            background-color: #081022;
-        }
-
-        .result-card {
-            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
-        }
-
-        html.dark .result-card {
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-        }
-
-        body.error-theme .result-card {
-            box-shadow: 0 18px 35px rgba(248, 113, 113, 0.2);
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-8px);
-            }
-        }
-
-        .floating {
-            animation: float 3s ease-in-out infinite;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/view.css}"/>
 </head>
 
-<body class="min-h-screen flex items-center justify-center p-6 transition-colors duration-300"
-      th:classappend="${success} ? '' : ' error-theme'">
-
-<main class="max-w-md w-full">
-    <div class="result-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
-        <div class="p-10 text-center">
-
-            <!-- 상태 배지 -->
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 font-bold text-sm"
-                 th:style="${success}
-                     ? 'background:rgba(161,198,6,0.15);color:#a1c606;'
-                     : 'background:rgba(254,226,226,0.67);color:#b91c1c;'">
-                <span class="material-symbols-outlined text-lg"
-                      th:text="${success} ? 'verified' : 'error'">verified</span>
-                <span th:text="${success} ? '인증 완료' : '인증 실패'">인증 완료</span>
-            </div>
-
-            <!-- 아이콘 -->
-            <div class="text-5xl mb-8 floating" th:text="${success} ? '✉️' : '😿'">✉️</div>
-
-            <!-- 제목 -->
-            <h1 class="text-xl font-semibold mb-4 leading-tight text-gray-800"
-                th:classappend="${success} ? ' text-gray-900 dark:text-white' : ' text-red-700 dark:text-red-400'"
-                th:text="${success} ? '구독 이메일 인증 완료' : '구독 이메일 인증 실패'">
-                구독 이메일 인증 완료
-            </h1>
-
-            <!-- 메시지 -->
-            <div th:if="${success}">
-                <p class="text-gray-600 dark:text-gray-400 mb-2 leading-relaxed">
-                    이메일 인증에 성공했고 구독이 시작됐어요<br/>
-                </p>
-            </div>
-            <div th:unless="${success}">
-                <p class="text-gray-600 dark:text-gray-400 mb-2 leading-relaxed">
-                    이메일 인증에 실패했어요<br/>
-                    인증 링크가 만료되었거나 유효하지 않아요
-                </p>
-                <p class="mt-4 text-sm text-red-400 dark:text-red-500 bg-red-50 dark:bg-red-950/30 rounded-2xl px-4 py-2"
-                   th:text="${message}">
-                </p>
-            </div>
-
-            <!-- 구분선 + 안내 -->
-            <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 space-y-1">
-                <p class="text-xs text-gray-400 dark:text-gray-500">이 창은 닫아도 돼요</p>
-            </div>
-
+<body>
+<main class="result-shell">
+    <section class="result-panel" aria-labelledby="result-title">
+        <div class="status-badge" th:classappend="${success} ? '' : ' error'"
+             th:text="${success} ? '인증 완료' : '인증 실패'">인증 완료</div>
+        <h1 id="result-title" class="result-title"
+            th:text="${success} ? '구독이 시작되었습니다' : '인증 링크를 확인해 주세요'">
+            구독이 시작되었습니다
+        </h1>
+        <p class="result-message"
+           th:text="${success}
+               ? '다음 발송일부터 고양이 영어 노트를 보내드립니다.'
+               : '인증 링크가 만료되었거나 유효하지 않습니다. 구독 페이지에서 다시 인증 메일을 요청해 주세요.'">
+            다음 발송일부터 고양이 밈 영어 노트를 보내드립니다.
+        </p>
+        <p class="result-message" th:if="${!success and message != null and !#strings.isEmpty(message)}"
+           th:text="${message}"></p>
+        <div class="result-actions">
+            <button type="button" class="secondary-button" data-close-tab>창 닫기</button>
+            <p class="close-fallback hidden" data-close-fallback>
+                브라우저에서 자동 닫기를 막았습니다. 이 탭은 직접 닫아주세요.
+            </p>
         </div>
-    </div>
+    </section>
 </main>
-
+<script th:src="@{/js/view-result.js}"></script>
 </body>
 </html>

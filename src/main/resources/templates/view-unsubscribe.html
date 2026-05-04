@@ -5,124 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title th:text="${result.title} + ' · 매일묘일'">구독 취소 · 매일묘일</title>
 
-    <link rel="stylesheet" as="style" crossorigin
+    <link rel="stylesheet" crossorigin
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-          rel="stylesheet"/>
-
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#ffca45",
-                        secondary: "#a1c606",
-                        "pastel-bg": "#fffefc",
-                        "background-dark": "#081022",
-                    },
-                    fontFamily: {
-                        display: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-                        sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "sans-serif"],
-                    },
-                },
-            },
-        };
-    </script>
-    <style type="text/tailwindcss">
-        body {
-            @apply bg-pastel-bg dark:bg-background-dark font-sans;
-        }
-
-        .result-card {
-            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
-        }
-
-        html.dark .result-card {
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-        }
-
-        body.type-error .result-card {
-            box-shadow: 0 18px 35px rgba(248, 113, 113, 0.2);
-        }
-
-        body.type-error {
-            background-color: #fff5f5;
-        }
-
-        html.dark body.type-error {
-            background-color: #081022;
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-8px);
-            }
-        }
-
-        .floating {
-            animation: float 3s ease-in-out infinite;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/view.css}"/>
 </head>
 
-<body class="min-h-screen flex items-center justify-center p-6 transition-colors duration-300"
-      th:classappend="'type-' + ${result.type}">
-
-<main class="max-w-md w-full">
-    <div class="result-card bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden">
-        <div class="p-10 text-center">
-
-            <!-- 상태 배지 -->
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 font-bold text-sm"
-                 th:style="${result.type == 'success'}
-                     ? 'background:rgba(161,198,6,0.15);color:#a1c606;'
-                     : (${result.type == 'error'}
-                         ? 'background:rgba(254,226,226,0.67);color:#b91c1c;'
-                         : 'background:rgba(255,202,69,0.15);color:#d4a017;')">
-                <span class="material-symbols-outlined text-lg"
-                      th:text="${result.type == 'success'} ? 'check_circle'
-                              : (${result.type == 'error'} ? 'error' : 'info')">
-                    check_circle
-                </span>
-                <span th:text="${result.title}"></span>
-            </div>
-
-            <!-- 아이콘 -->
-            <div class="text-7xl mb-8 floating"
-                 th:text="${result.type == 'success'} ? '🐈' : (${result.type == 'error'} ? '😿' : '🙀')">
-                🐈
-            </div>
-
-            <!-- 제목 -->
-            <h1 class="text-3xl font-black mb-4 leading-tight"
-                th:classappend="${result.type == 'error'} ? ' text-red-700 dark:text-red-400' : ' text-gray-900 dark:text-white'"
-                th:text="${result.title}">
-            </h1>
-
-            <!-- 메시지 -->
-            <p class="text-gray-500 dark:text-gray-400 mb-8 leading-relaxed whitespace-pre-line"
-               th:text="${result.message}">
-            </p>
-
-            <!-- 구분선 + 안내 -->
-            <div class="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-1">
-                <p class="text-sm text-gray-400 dark:text-gray-500">이 창은 닫아도 돼요</p>
-            </div>
-
+<body>
+<main class="result-shell">
+    <section class="result-panel" aria-labelledby="unsubscribe-result-title">
+        <div class="status-badge"
+             th:classappend="${result.type == 'error'} ? ' error' : (${result.type == 'info'} ? ' info' : '')"
+             th:text="${result.title}">구독 해지 완료</div>
+        <h1 id="unsubscribe-result-title" class="result-title" th:text="${result.title}">구독 해지 완료</h1>
+        <p class="result-message" th:text="${result.message}">
+            구독이 정상적으로 해지되었습니다.
+        </p>
+        <div class="result-actions">
+            <a href="/subscribe" class="secondary-button">구독 페이지로 이동</a>
         </div>
-    </div>
+    </section>
 </main>
-
 </body>
 </html>
