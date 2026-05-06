@@ -28,8 +28,10 @@ public class ContentClient {
 					response.statusCode(),
 					response.headers().contentType().orElse(null));
 				if (response.statusCode().is2xxSuccessful()) {
-					return response.bodyToMono(DailyMemeContent.class)
-						.map(Optional::of);
+					return response.bodyToMono(ContentApiResponse.class)
+						.map(ContentApiResponse::content)
+						.map(Optional::ofNullable)
+						.defaultIfEmpty(Optional.empty());
 				}
 				return response.bodyToMono(String.class)
 					.doOnNext(body -> log.error("Content API error: status={}, body={}", response.statusCode(), body))

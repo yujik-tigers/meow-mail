@@ -37,4 +37,33 @@ class DailyMemeContentTest {
 		assertThat(content.source()).isEqualTo("reddit-Catmemes");
 	}
 
+	@Test
+	@DisplayName("컨텐츠 서버의 wrapper JSON 응답을 매핑한다")
+	void mapsContentApiResponse() throws Exception {
+		String response = """
+			{
+			  "status_code": 200,
+			  "status_message": "OK",
+			  "content": {
+			    "image_url": "https://i.redd.it/djk07fn9ooyg1.jpeg",
+			    "meme_text": "The new cat taught the old cat to eat like this.",
+			    "expressions": "teach someone to (do something)",
+			    "translation": "~에게 (무엇을) 하도록/하는 법을 가르치다",
+			    "background": null,
+			    "author": "mikelbv",
+			    "source": "reddit-Catmemes"
+			  }
+			}
+			""";
+
+		ContentApiResponse contentApiResponse = objectMapper.readValue(response, ContentApiResponse.class);
+
+		assertThat(contentApiResponse.statusCode()).isEqualTo(200);
+		assertThat(contentApiResponse.statusMessage()).isEqualTo("OK");
+		assertThat(contentApiResponse.content().imageUrl()).isEqualTo("https://i.redd.it/djk07fn9ooyg1.jpeg");
+		assertThat(contentApiResponse.content().memeText()).isEqualTo("The new cat taught the old cat to eat like this.");
+		assertThat(contentApiResponse.content().author()).isEqualTo("mikelbv");
+		assertThat(contentApiResponse.content().source()).isEqualTo("reddit-Catmemes");
+	}
+
 }

@@ -31,13 +31,17 @@ class ContentClientTest {
 					.header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
 					.body("""
 						{
-						  "image_url": "https://i.redd.it/djk07fn9ooyg1.jpeg",
-						  "meme_text": "The new cat taught the old cat to eat like this.",
-						  "expressions": "teach someone to (do something)",
-						  "translation": "~에게 (무엇을) 하도록/하는 법을 가르치다",
-						  "background": null,
-						  "author": "mikelbv",
-						  "source": "reddit-Catmemes"
+						  "status_code": 200,
+						  "status_message": "OK",
+						  "content": {
+						    "image_url": "https://i.redd.it/djk07fn9ooyg1.jpeg",
+						    "meme_text": "The new cat taught the old cat to eat like this.",
+						    "expressions": "teach someone to (do something)",
+						    "translation": "~에게 (무엇을) 하도록/하는 법을 가르치다",
+						    "background": null,
+						    "author": "mikelbv",
+						    "source": "reddit-Catmemes"
+						  }
 						}
 						""")
 					.build());
@@ -59,6 +63,32 @@ class ContentClientTest {
 			assertThat(dailyMemeContent.author()).isEqualTo("mikelbv");
 			assertThat(dailyMemeContent.source()).isEqualTo("reddit-Catmemes");
 		});
+	}
+
+	@Test
+	@DisplayName("성공 응답에 content가 없으면 빈 결과를 반환한다")
+	void requestDailyMemeContentReturnsEmptyWhenContentIsMissing() {
+		WebClient webClient = WebClient.builder()
+			.baseUrl("https://content.example")
+			.exchangeFunction(request -> Mono.just(ClientResponse.create(HttpStatus.OK)
+				.header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+				.body("""
+					{
+					  "status_code": 200,
+					  "status_message": "OK",
+					  "content": null
+					}
+					""")
+				.build()))
+			.build();
+		ContentClient contentClient = new ContentClient(
+			webClient,
+			new ContentProperties("https://content.example", "/daily-meme", "/tmp/meow-mail", 1024 * 1024)
+		);
+
+		Optional<DailyMemeContent> content = contentClient.requestDailyMemeContent("2026-05-04");
+
+		assertThat(content).isEmpty();
 	}
 
 	@Test
