@@ -91,6 +91,19 @@ jobs:
               -v /home/${{ secrets.EC2_USERNAME }}/images:/app/contents/images \
               ${{ secrets.DOCKERHUB_USERNAME }}/meow-mail:latest
 
+            docker rm -f meow-mail-test-mail || true
+
+            docker run --rm \
+              --name meow-mail-test-mail \
+              --network meow-network \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              -e APP_SCHEDULING_ENABLED=false \
+              -e SPRING_TASK_SCHEDULING_ENABLED=false \
+              -e TEST_MAIL_RECIPIENTS=${{ secrets.TEST_MAIL_RECIPIENTS }} \
+              -e TEST_MAIL_EXIT_AFTER_SEND=true \
+              -v /home/${{ secrets.EC2_USERNAME }}/images:/app/contents/images \
+              ${{ secrets.DOCKERHUB_USERNAME }}/meow-mail:latest
+
       - name: Remove Runner IP from Security Group
         if: always()
         run: |

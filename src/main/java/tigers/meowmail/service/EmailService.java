@@ -92,6 +92,27 @@ public class EmailService {
 		}
 	}
 
+	public boolean sendDailyMemeEmailTo(String email) {
+		ZoneId zoneId = ZoneId.of(appProperties.timezone());
+		ZonedDateTime nowKst = ZonedDateTime.now(zoneId);
+		String today = nowKst.toLocalDate().toString();
+
+		Optional<Path> assetPath = contentService.findDailyMemeAssetPath(today);
+		Optional<DailyMemeContent> content = contentService.findDailyMemeContent(today);
+		if (assetPath.isEmpty() || content.isEmpty()) {
+			log.warn("No complete daily meme content found for test mail ({}). Fetching now.", today);
+			contentService.fetchAndSaveDailyMemeContent(today);
+			assetPath = contentService.findDailyMemeAssetPath(today);
+			content = contentService.findDailyMemeContent(today);
+		}
+		if (assetPath.isEmpty() || content.isEmpty()) {
+			log.warn("No complete daily meme content for test mail ({}). Skipping email dispatch.", today);
+			return false;
+		}
+
+		return sendMemeEmail(today, email, new FileSystemResource(assetPath.get()), content.get());
+	}
+
 	private void sendMemeEmails(String today, List<Subscription> targets, Path assetPath, DailyMemeContent content) {
 		FileSystemResource memeAsset = new FileSystemResource(assetPath);
 		log.info("Sending daily meme email with asset: {}, total targets={}", assetPath.getFileName(), targets.size());
@@ -128,8 +149,12 @@ public class EmailService {
 	}
 
 	private boolean sendMemeEmail(String today, Subscription subscriber, FileSystemResource memeAsset, DailyMemeContent content) {
+		return sendMemeEmail(today, subscriber.getEmail(), memeAsset, content);
+	}
+
+	private boolean sendMemeEmail(String today, String email, FileSystemResource memeAsset, DailyMemeContent content) {
 		try {
-			Context context = buildEmailContext(today, subscriber.getEmail());
+			Context context = buildEmailContext(today, email);
 			context.setVariable("memeAssetCid", DAILY_MEME_ASSET_CID);
 			context.setVariable("memeText", content.memeText());
 			context.setVariable("expressions", content.expressions());
@@ -138,10 +163,10 @@ public class EmailService {
 			context.setVariable("author", content.author());
 			context.setVariable("source", content.source());
 			String htmlContent = templateEngine.process(EMAIL_DAILY_MEME, context);
-			return sendMailWithInlineResources(subscriber.getEmail(), SUBJECT_DAILY_CAT, htmlContent,
+			return sendMailWithInlineResources(email, SUBJECT_DAILY_CAT, htmlContent,
 				Map.of(DAILY_MEME_ASSET_CID, memeAsset), "meme");
 		} catch (RuntimeException e) {
-			log.error("Failed to prepare daily meme mail to: {}", subscriber.getEmail(), e);
+			log.error("Failed to prepare daily meme mail to: {}", email, e);
 			return false;
 		}
 	}
