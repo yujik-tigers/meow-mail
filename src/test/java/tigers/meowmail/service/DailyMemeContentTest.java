@@ -17,7 +17,7 @@ class DailyMemeContentTest {
 		String response = """
 			{
 			  "image_url": "https://i.redd.it/djk07fn9ooyg1.jpeg",
-			  "meme_text": "The new cat taught the old cat to eat like this.",
+			  "meme_text_translation": "The new cat taught the old cat to eat like this.",
 			  "expressions": "teach someone to (do something)",
 			  "translation": "~에게 (무엇을) 하도록/하는 법을 가르치다",
 			  "background": null,
@@ -29,7 +29,7 @@ class DailyMemeContentTest {
 		DailyMemeContent content = objectMapper.readValue(response, DailyMemeContent.class);
 
 		assertThat(content.imageUrl()).isEqualTo("https://i.redd.it/djk07fn9ooyg1.jpeg");
-		assertThat(content.memeText()).isEqualTo("The new cat taught the old cat to eat like this.");
+		assertThat(content.memeTextTranslation()).isEqualTo("The new cat taught the old cat to eat like this.");
 		assertThat(content.expressions()).isEqualTo("teach someone to (do something)");
 		assertThat(content.translation()).isEqualTo("~에게 (무엇을) 하도록/하는 법을 가르치다");
 		assertThat(content.background()).isNull();
@@ -46,7 +46,7 @@ class DailyMemeContentTest {
 			  "status_message": "OK",
 			  "content": {
 			    "image_url": "https://i.redd.it/djk07fn9ooyg1.jpeg",
-			    "meme_text": "The new cat taught the old cat to eat like this.",
+			    "meme_text_translation": "The new cat taught the old cat to eat like this.",
 			    "expressions": "teach someone to (do something)",
 			    "translation": "~에게 (무엇을) 하도록/하는 법을 가르치다",
 			    "background": null,
@@ -61,7 +61,7 @@ class DailyMemeContentTest {
 		assertThat(contentApiResponse.statusCode()).isEqualTo(200);
 		assertThat(contentApiResponse.statusMessage()).isEqualTo("OK");
 		assertThat(contentApiResponse.content().imageUrl()).isEqualTo("https://i.redd.it/djk07fn9ooyg1.jpeg");
-		assertThat(contentApiResponse.content().memeText()).isEqualTo("The new cat taught the old cat to eat like this.");
+		assertThat(contentApiResponse.content().memeTextTranslation()).isEqualTo("The new cat taught the old cat to eat like this.");
 		assertThat(contentApiResponse.content().author()).isEqualTo("mikelbv");
 		assertThat(contentApiResponse.content().source()).isEqualTo("reddit-Catmemes");
 	}
