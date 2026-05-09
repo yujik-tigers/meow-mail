@@ -156,7 +156,6 @@ public class EmailService {
 		try {
 			Context context = buildEmailContext(today, email);
 			context.setVariable("memeAssetCid", DAILY_MEME_ASSET_CID);
-			context.setVariable("memeTextTranslation", content.memeTextTranslation());
 			context.setVariable("expressions", content.expressions());
 			context.setVariable("translation", content.translation());
 			context.setVariable("background", content.background());

@@ -60,7 +60,6 @@ class ContentClientTest {
 		assertThat(request.url().getQuery()).isEqualTo("date=2026-05-04");
 		assertThat(content).hasValueSatisfying(dailyMemeContent -> {
 			assertThat(dailyMemeContent.imageUrl()).isEqualTo("https://i.redd.it/djk07fn9ooyg1.jpeg");
-			assertThat(dailyMemeContent.memeTextTranslation()).isEqualTo("The new cat taught the old cat to eat like this.");
 			assertThat(dailyMemeContent.author()).isEqualTo("mikelbv");
 			assertThat(dailyMemeContent.source()).isEqualTo("reddit-Catmemes");
 		});

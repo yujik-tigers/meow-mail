@@ -94,9 +94,6 @@ public class ContentService {
 			log.warn("Daily meme content for {} has no image_url. Skipping save.", date);
 			return false;
 		}
-		if (isBlank(content.memeTextTranslation())) {
-			log.warn("Daily meme content for {} has no meme_text_translation. Email will use an empty value.", date);
-		}
 		if (isBlank(content.expressions())) {
 			log.warn("Daily meme content for {} has no expressions. Email will use an empty value.", date);
 		}

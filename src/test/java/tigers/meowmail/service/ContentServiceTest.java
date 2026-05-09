@@ -93,7 +93,6 @@ class ContentServiceTest {
 	void fetchAndSaveDailyMemeContentReturnsFalseAndStoresNothingWhenImageUrlIsBlank() {
 		DailyMemeContent content = new DailyMemeContent(
 			" ",
-			"meme text",
 			"expression",
 			"translation",
 			null,
@@ -163,7 +162,6 @@ class ContentServiceTest {
 	private static DailyMemeContent content() {
 		return new DailyMemeContent(
 			ASSET_URL,
-			"The new cat taught the old cat to eat like this.",
 			"teach someone to (do something)",
 			"~에게 (무엇을) 하도록/하는 법을 가르치다",
 			null,

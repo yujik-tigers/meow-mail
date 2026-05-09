@@ -71,12 +71,6 @@
                                         <tr>
                                             <td style="padding:0 16px 14px;">
                                                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-                                                    <tr>
-                                                        <td height="36" style="height:36px;border-top:1px solid #d9e3f0;">
-                                                            <p style="margin:0;font-size:14px;line-height:36px;color:#4b5565;text-align:center;"
-                                                               th:text="${memeTextTranslation}">meme text translation</p>
-                                                        </td>
-                                                    </tr>
                                                     <tr th:if="${(author != null and !#strings.isEmpty(author)) or (source != null and !#strings.isEmpty(source))}">
                                                         <td height="24" valign="middle" style="height:24px;border-top:1px solid #d9e3f0;vertical-align:middle;">
                                                             <p style="margin:0;font-size:12px;line-height:24px;color:#7b8491;text-align:center;">
