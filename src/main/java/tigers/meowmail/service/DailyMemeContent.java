@@ -18,8 +18,7 @@ public record DailyMemeContent(
 	@JsonProperty("expression_translation")
 	String expressionTranslation,
 
-	String author,
-	) 
+	String author)
 	{
 
 }
