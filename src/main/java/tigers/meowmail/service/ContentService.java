@@ -94,13 +94,13 @@ public class ContentService {
 			log.warn("Daily meme content for {} has no image_url. Skipping save.", date);
 			return false;
 		}
-		if (isBlank(content.expressions())) {
+		if (isBlank(content.expression())) {
 			log.warn("Daily meme content for {} has no expressions. Email will use an empty value.", date);
 		}
-		if (isBlank(content.translation())) {
+		if (isBlank(content.expressionTranslation())) {
 			log.warn("Daily meme content for {} has no translation. Email will use an empty value.", date);
 		}
-		if (isBlank(content.author()) && isBlank(content.source())) {
+		if (isBlank(content.author())) {
 			log.warn("Daily meme content for {} has no attribution fields. Email will omit attribution.", date);
 		}
 		return true;
