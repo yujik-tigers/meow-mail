@@ -156,11 +156,11 @@ public class EmailService {
 		try {
 			Context context = buildEmailContext(today, email);
 			context.setVariable("memeAssetCid", DAILY_MEME_ASSET_CID);
-			context.setVariable("expressions", content.expressions());
-			context.setVariable("translation", content.translation());
-			context.setVariable("background", content.background());
+			context.setVariable("expressions", content.expression());
+			context.setVariable("translation", content.expressionTranslation());
+			context.setVariable("background", null);
 			context.setVariable("author", content.author());
-			context.setVariable("source", content.source());
+			context.setVariable("source", null);
 			String htmlContent = templateEngine.process(EMAIL_DAILY_MEME, context);
 			return sendMailWithInlineResources(email, SUBJECT_DAILY_CAT, htmlContent,
 				Map.of(DAILY_MEME_ASSET_CID, memeAsset), "meme");
